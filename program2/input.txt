@@ -1,0 +1,39 @@
+<Hello>
+    <Sky>
+        <Name>Jose</Name>
+        <Rank>Freshman</Rank>
+        <GPA>0.0</GPA>
+    </Sky>
+    
+    <Ground>
+        <Name>Alma</Name>
+        <Rank>Senior</Rank>
+        <GPA>3.49</GPA>
+    </Ground>
+    
+    <Snake>
+        <Name>Jojo</Name>
+        <Assignment>Exam1</Assignment>
+        <Value>100</Value>
+        <LetterGrade>A</LetterGrade>
+    </Snake>
+
+    <Sky>
+        <Name>Jose</Name>
+        <Rank>Freshman</Rank>
+        <GPA>0.0</GPA>
+    </Sky>
+    
+    <Ground>
+        <Name>Alma</Name>
+        <Rank>Senior</Rank>
+        <GPA>3.49</GPA>
+    </Ground>
+    
+    <Snake>
+        <Name>Jose</Name>
+        <Assignment>Exam1</Assignment>
+        <Value>100</Value>
+        <LetterGrade>A</LetterGrade>
+    </Snake>
+</Hello>

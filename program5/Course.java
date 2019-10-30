@@ -17,14 +17,20 @@ import org.w3c.dom.Element;
 public class Course {
     private HashMap<Integer,Segment> segments = new HashMap<Integer,Segment>();
     private Document doc;
-    private static int segmentNumber = 1;
+    // private static int segmentNumber = 1;
+    
 
     // course gets the segment in which the car is in
     public int getCarLocationSegment(Car car){
+        for(Map.entry<Integer, Segment> entry : segments.entrySet()){
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        }
+    }
+    // course gets the location of the car every 30 secs
+    public void getCarLocationsInIntervals(Car car){
+        double[] locations;
 
     }
-
-
     // sets the course info
     public void setSegments(Document doc){
         NodeList nList = doc.getElementsByTagName("SEGMENT");

@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 
 public class Simulation {
     private static Document doc;
+    private Course course;
     private float timeIncrement = 0.01;
      // user input and prompt
     private static String cmdInterface(Scanner in){
@@ -48,19 +49,7 @@ public class Simulation {
 
     private static void startSIM(Car carA, Car carB, Car carC){
         // find out the car data
-        carA.setRunningData(speedLimit, segmentLength);
-        carA.setTotalTime();
-        carA.setDistanceInIntervals(speedLimit);
-
-        carB.setRunningData(carA, speedLimit, segmentLength);
-        carB.setTotalTime();
-        carB.setDistanceInIntervals(speedLimit);
-
-        carC.setRunningData(carB, speedLimit, segmentLength);
-        carC.setTotalTime();
-        carC.setDistanceInIntervals(speedLimit);
-
-        course.printCarResults(carA, carB, carC);
+        
     }
 
     public static void main(String[] args) {
@@ -74,7 +63,7 @@ public class Simulation {
 
         setDoc(inputFile);
 
-        Course course = new Course();
+        course = new Course();
 
         course.setSegments(doc);
 
@@ -84,6 +73,6 @@ public class Simulation {
         Car carC = new Car(doc);
 
         
-        // startSIM(carA, carB, carC);
+        startSIM(carA, carB, carC);
     }
 }

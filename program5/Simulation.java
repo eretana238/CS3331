@@ -8,10 +8,6 @@
 // The program uses an integral based approach to figure out the distance for every 30 seconds and finds the location regardless
 // of driver type (driving style) and speed.
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import java.io.File;
@@ -20,14 +16,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
 
 public class Simulation {
     private static Document doc;
-    private Course course;
-    private float timeIncrement = 0.01;
+    private static Course course;
+    private static Car[] cars;
+    private static double timeIncrement = 0.01;
      // user input and prompt
     private static String cmdInterface(Scanner in){
         System.out.println("Please input xml file name:");
@@ -46,8 +40,12 @@ public class Simulation {
             e.printStackTrace();
         }
     }
+    private static void setAmountOfCars(){
+        int amountOfCars = doc.getElementsByTagName("DRIVER").getLength();
+        cars = new Car[amountOfCars];
+    }
 
-    private static void startSIM(Car carA, Car carB, Car carC){
+    private static void startSIM(Car[] cars){
         // find out the car data
         
     }
@@ -62,17 +60,17 @@ public class Simulation {
         }
 
         setDoc(inputFile);
+        setAmountOfCars();
 
         course = new Course();
 
         course.setSegments(doc);
 
-        // // create car instances 
-        Car carA = new Car(doc);
-        Car carB = new Car(doc);
-        Car carC = new Car(doc);
+        // create car instances 
+        for(int i = 0; i < cars.length; i++){
+            cars[i] = new Car(doc);
+        }
 
-        
-        startSIM(carA, carB, carC);
+        startSIM(cars);
     }
 }

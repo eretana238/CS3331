@@ -3,6 +3,6 @@ abstract class PositionState{
     public void needToBrake(Car car){
         car.setState(new Braking());
     }
-    public abstract void decelForSegment(Car car, Segment current, Segment next);
-    public abstract void decelForCarAheacd(Car current, Car next);
+    public abstract void decelForSegment(Car car, Segment segment);
+    public abstract void decelForCarAheacd(Car current, Car front);
 }

@@ -44,3 +44,4 @@ public class Course {
     public void setDocument(Document doc){
         this.doc = doc;
     }
+}

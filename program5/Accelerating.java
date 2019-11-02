@@ -2,30 +2,24 @@
  * Accelerating
  */
 public class Accelerating extends PositionState{
-
+    public Accelerating(Car car){
+         
+    }
     @Override
     public void newPos() {
-        // TODO Auto-generated method stub
+        System.out.println("getting position");
 
     }
 
     @Override
-    public void needToBrake() {
-        // TODO Auto-generated method stub
+    public void decelForSegment(Segment current, Segment next) {
+        System.out.println("getting deceleration for segment");
 
     }
 
     @Override
-    public void decelForSegment() {
-        // TODO Auto-generated method stub
+    public void decelForCarAheacd(Car current, Car next) {
+        System.out.println("getting deceleration for car ahead");
 
     }
-
-    @Override
-    public void decelForCarAheacd() {
-        // TODO Auto-generated method stub
-
-    }
-    
-    
 }

@@ -25,9 +25,7 @@ class Car{
     Car(Document doc){
         setDoc(doc);
         assignDriver();
-        this.accel = this.driver.getDriverType().getMaxAccel();
-        this.maxSpeed = this.driver.getDriverType().getSpeedLimit();
-        this.location = 0.0;
+        this.state = new Accelerating();
     }
 
     // sets the driver

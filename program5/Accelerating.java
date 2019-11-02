@@ -10,7 +10,7 @@ public class Accelerating extends PositionState{
     }
 
     @Override
-    public void needToBreak() {
+    public void needToBrake() {
         // TODO Auto-generated method stub
 
     }

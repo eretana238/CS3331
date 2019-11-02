@@ -10,12 +10,6 @@ public class Coasting extends PositionState{
     }
 
     @Override
-    public void needToBreak() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public void decelForSegment() {
         // TODO Auto-generated method stub
 

@@ -10,7 +10,7 @@ public class Braking extends PositionState{
     }
 
     @Override
-    public void needToBreak() {
+    public void needToBrake() {
         // TODO Auto-generated method stub
 
     }
@@ -26,6 +26,4 @@ public class Braking extends PositionState{
         // TODO Auto-generated method stub
 
     }
-    
-    
 }

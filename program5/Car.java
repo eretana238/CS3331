@@ -9,8 +9,6 @@ import org.w3c.dom.Element;
 // d = v * t
 
 class Car{
-    // stores the distances for each 30 sec interval
-    // private ArrayList<Double> results = new ArrayList<Double>();
     private Driver driver;
     private static int driverNumber;
     private PositionState state;
@@ -18,7 +16,6 @@ class Car{
     private Document doc;
     
     private double accel;
-    private double accelMilesInSeconds;
 
     private double maxSpeed;
 
@@ -29,7 +26,6 @@ class Car{
         setDoc(doc);
         assignDriver();
         this.accel = this.driver.getDriverType().getMaxAccel();
-        this.accelMilesInSeconds = this.accel/3600;
         this.maxSpeed = this.driver.getDriverType().getSpeedLimit();
         this.location = 0.0;
     }

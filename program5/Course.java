@@ -9,21 +9,18 @@ import org.w3c.dom.Element;
 public class Course {
     private HashMap<Integer,Segment> segments = new HashMap<Integer,Segment>();
     private Document doc;
-    // private static int segmentNumber = 1;
-    
 
     // course gets the segment in which the car is in
     public int getCarLocationSegment(Car car){
         double totalDistance = 0;
         for(Map.Entry<Integer, Segment> segment: segments.entrySet()){
             totalDistance += segment.getValue().getLength();
-            while(true){
-                // check if current car location for every milisencond is less than the time
-
-                if(car.getLocation() > totalDistance) break;
-            }
+            // check if current car location for every milisencond is less than the time
+            if(car.getLocation() <= totalDistance) 
+                return segment.getValue().getSegmentNumber();
         }
-        return 0;
+        // returns -1 if car finished course
+        return -1;
     }
     // sets the course info
     public void setSegments(Document doc){

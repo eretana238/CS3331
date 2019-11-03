@@ -11,6 +11,11 @@ import org.w3c.dom.Element;
 class Car{
     private Driver driver;
     private static int driverNumber;
+
+    private PositionState accelerating;
+    private PositionState coasting;
+    private PositionState braking;
+
     private PositionState state;
 
     private Document doc;
@@ -18,14 +23,17 @@ class Car{
     private double accel;
 
     private double maxSpeed;
+    private double currentSpeed;
 
     private double location;
-
 
     Car(Document doc){
         setDoc(doc);
         assignDriver();
-        this.state = new Accelerating();
+        accelerating = new Accelerating(this);
+        coasting = new Coasting(this);
+        braking = new Braking(this);
+        this.state = accelerating;
     }
 
     // sets the driver
@@ -46,7 +54,21 @@ class Car{
         }
     }
 
-    // find location for 0.01 s intervals, return 
+    public void run(double timeIncrement){
+        double accelInSeconds = accel / 3600;
+        if(state == accelerating){
+            currentSpeed += accelInSeconds * timeIncrement;
+            location += currentSpeed * timeIncrement;
+        }
+        else if(state == coasting){
+            location += currentSpeed * timeIncrement;
+        }
+        else if(state == braking){
+            currentSpeed -= accelInSeconds * timeIncrement;
+            location += currentSpeed * timeIncrement;
+        }
+    }
+
     public void setState(PositionState state){
         this.state = state;
     }
@@ -63,9 +85,21 @@ class Car{
     public void setLocation(double location){
         this.location = location;
     }
+    public void setCurrentSpeed(double currentSpeed){
+        this.currentSpeed = currentSpeed;
+    }
 
     public PositionState getState(){
         return state;
+    }
+    public PositionState getAcceleratingState(){
+        return this.accelerating;
+    }
+    public PositionState getCoastingState(){
+        return this.coasting;
+    }
+    public PositionState getBrakingState(){
+        return this.braking;
     }
     public Driver getDriver(){
         return driver;
@@ -78,5 +112,8 @@ class Car{
     }
     public double getLocation(){
         return location;
+    }
+    public double getCurrentSpeed(){
+        return currentSpeed;
     }
 }

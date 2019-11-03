@@ -46,8 +46,7 @@ public class Simulation {
     }
 
     private static void startSIM(Car[] cars){
-        // find out the car data
-        
+        // TODO
     }
 
     public static void main(String[] args) {
@@ -62,7 +61,7 @@ public class Simulation {
         setDoc(inputFile);
         setAmountOfCars();
 
-        course = new Course();
+        course = new Course(cars);
 
         course.setSegments(doc);
 

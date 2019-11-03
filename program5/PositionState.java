@@ -1,8 +1,6 @@
-abstract class PositionState{
-    public abstract void newPos(Car car);
-    public void needToBrake(Car car){
-        car.setState(new Braking());
-    }
-    public abstract void decelForSegment(Car car, Segment segment);
-    public abstract void decelForCarAheacd(Car current, Car front);
+public interface PositionState{
+    public void newPos();
+    public void needToBrake();
+    public void decelForSegment(Segment segment);
+    public void decelForCarAheacd(Car front);
 }

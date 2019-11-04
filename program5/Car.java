@@ -26,6 +26,8 @@ class Car{
     private double currentSpeed;
 
     private double location;
+    
+    private double elapsedTime;
 
     Car(Document doc){
         setDoc(doc);
@@ -56,6 +58,7 @@ class Car{
 
     public void run(double timeIncrement){
         double accelInSeconds = accel / 3600;
+        elapsedTime += timeIncrement;
         if(state == accelerating){
             currentSpeed += accelInSeconds * timeIncrement;
             location += currentSpeed * timeIncrement;
@@ -71,6 +74,15 @@ class Car{
 
     public void setState(PositionState state){
         this.state = state;
+    }
+    public void accel(){
+        this.state = accelerating;
+    }
+    public void coast(){
+        this.state = coasting;
+    }
+    public void brake(){
+        this.state = braking;
     }
     // sets the document file form xml
     public void setDoc(Document doc){
@@ -115,5 +127,8 @@ class Car{
     }
     public double getCurrentSpeed(){
         return currentSpeed;
+    }
+    public double getElapsedTime(){
+        return elapsedTime;
     }
 }

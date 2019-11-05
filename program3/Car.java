@@ -37,7 +37,7 @@ class Car{
     private double accelMilesInSeconds;
 
     private double currentSpeed;
-    
+
     ArrayList<Double> accelTime = new ArrayList<Double>();
     ArrayList<Double> accelDistance = new ArrayList<Double>();
 

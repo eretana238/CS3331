@@ -46,7 +46,7 @@ public class Simulation {
     }
 
     private static void startSIM(Car[] cars){
-        // TODO
+        course.changeCarState(0.1);
     }
 
     public static void main(String[] args) {

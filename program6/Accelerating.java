@@ -13,12 +13,12 @@ public class Accelerating implements PositionState{
 
     @Override
     public void decelForSegment(Segment segment) {
-        // TODO Auto-generated method stub
+        System.out.println("decelerating for segment");
     }
 
     @Override
     public void decelForCarAheacd(Car front) {
-        // TODO Auto-generated method stub
+        System.out.println("decelerating for car ahead");
     }
 
     @Override

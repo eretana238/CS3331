@@ -7,6 +7,7 @@ public class DriverType {
     private double followTime;
     private double speedLimit;
     private double maxAccel;
+
     // constructor
     DriverType(String typeName, double followTime, double speedLimit, double maxAccel){
         this.typeName = typeName;
@@ -32,13 +33,13 @@ public class DriverType {
     public void setTypeName(String typeName){
         this.typeName = typeName;
     }
-    public void setFollowTime(){
+    public void setFollowTime(double followTime){
         this.followTime = followTime;
     }
     public void setSpeedLimit(double speedLimit){
         this.speedLimit = speedLimit;
     }
-    public void setMaxAccel(){
+    public void setMaxAccel(double maxAccel){
         this.maxAccel = maxAccel;
     }
 }

@@ -1,9 +1,9 @@
 /**
- * Coasting
+ * Braking
  */
-public class Coasting implements PositionState{
+public class Braking implements PositionState{
     Car car;
-    public Coasting(Car car){
+    public Braking(Car car){
         this.car = car;
     }
     @Override
@@ -14,20 +14,18 @@ public class Coasting implements PositionState{
 
     @Override
     public void decelForSegment(Segment segment) {
-        // TODO Auto-generated method stub
+        System.out.println("Already braking");
 
     }
 
     @Override
     public void decelForCarAheacd(Car front) {
-        // TODO Auto-generated method stub
+        System.out.println("Already braking");
 
     }
 
     @Override
     public void needToBrake() {
-        System.out.println("Braking");
-        car.setState(car.getBrakingState());
+        System.out.println("Already braking");
     }
-    
 }

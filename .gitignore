@@ -1,0 +1,5 @@
+# exclude class files
+*.class
+# exclude IDE folders
+**/.idea
+**/.vscode

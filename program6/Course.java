@@ -10,31 +10,10 @@ public class Course {
     private HashMap<Integer,Segment> segments = new HashMap<Integer,Segment>();
     private Document doc;
     private Car[] cars;
-    private int carNumber;
+    private double totalCourseLength;
 
     public Course(Car[] cars){
         this.cars = cars;
-    }
-
-    // course gets the segment in which the car is in
-    public int getCarLocationSegment(Car car){
-        double totalDistance = 0;
-        for(Map.Entry<Integer, Segment> segment: segments.entrySet()){
-            totalDistance += segment.getValue().getLength();
-            // check if current car location for every milisencond is less than the time
-            if(car.getLocation() <= totalDistance) 
-                return segment.getValue().getSegmentNumber();
-        }
-        // returns -1 if car finished course
-        return -1;
-    }
-    // course gets the segment in which the car is in
-    public int getNextSegment(){
-        for(Map.Entry<Integer, Segment> segment: segments.entrySet()){
-
-        }
-        // returns -1 if car finished course
-        return -1;
     }
     // sets the course info
     public void setSegments(Document doc){
@@ -58,40 +37,38 @@ public class Course {
     public void setDocument(Document doc){
         this.doc = doc;
     }
-    public void changeCarState(double timeIncrement){
-        while(true){
-            // run each car for timeIncrement
-            for(int i = 0; i < cars.length; i++){
-                Car car = cars[i];
-                Segment currentSegment = segments.get(getCarLocationSegment(car));
-                Segment nextSegment = segments.get(currentSegment.getSegmentNumber()+1);
-                
-                if(car.getLocation() >= 3) continue;
-                // i*60 <= car.getElapsedTime() makes sure that each car starts 1 minute apart from each other
-                if((car.getCurrentSpeed() != car.getMaxSpeed() || car.getCurrentSpeed() != currentSegment.getSpeedLimit()) && car.getState().getClass().getName() != "Accelerating" && car.getElapsedTime() >= i*60) 
-                    car.accel();
-
-                else if((car.getCurrentSpeed() == car.getMaxSpeed() || car.getCurrentSpeed() == currentSegment.getSpeedLimit()) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60)
-                    car.coast();
-                
-                else if(nextSegment.getSpeedLimit() < currentSegment.getSpeedLimit() && isSpeedLimitInRange(i,nextSegment) && car.getElapsedTime() >= i*60){
-                    car.getState().decelForSegment(nextSegment);
-                }
-
-                else if(nextSegment.getSpeedLimit() < currentSegment.getSpeedLimit() && isCarAhead(i) && car.getElapsedTime() >= i*60){
-                    car.getState().decelForCarAheacd(cars[i+1]);
-                }
-                if(getCarLocationSegment(car) != -1){
-                    car.run(timeIncrement);            
-                }
-            }
-            if(getCarLocationSegment(cars[cars.length-1]) < 0){
-                break;
-            }
+    public void setTotalCourseLength(){
+        for(int i = 1; i < segments.size(); i++){
+            totalCourseLength += segments.get(i).getLength();
         }
     }
+
+    public HashMap<Integer,Segment> getSegments(){
+        return this.segments;
+    }
+
+    // course gets the segment in which the car is in
+    public int getCarLocationSegment(Car car){
+        double totalDistance = 0;
+        for(Map.Entry<Integer, Segment> segment: segments.entrySet()){
+            totalDistance += segment.getValue().getLength();
+            // check if current car location for every milisencond is less than the time
+            if(car.getLocation() <= totalDistance) 
+                return segment.getValue().getSegmentNumber();
+        }
+        // returns -1 if car finished course
+        return -1;
+    }
+
+    public double getTotalCourseLength(){
+        return this.totalCourseLength;
+    }
     public boolean isSpeedLimitInRange(int carNumber, Segment nextSegment){
-        // check if the car negative decel can reach next speed limit
+        // get time remaining to finish the segment, and compare time when decelerating current speed to next speed limit
+        double changeToSegmentSpeedTime = Math.abs(nextSegment.getSpeedLimit() - cars[carNumber].getCurrentSpeed())/cars[carNumber].getAccel();
+        double distanceToStartBraking = .5 * (cars[carNumber].getAccel()/3600) * Math.pow(changeToSegmentSpeedTime, 2);
+        
+        
         return false;
     }
     public boolean isCarAhead(int carNumber){

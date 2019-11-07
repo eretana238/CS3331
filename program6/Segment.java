@@ -5,7 +5,7 @@ public class Segment {
     private int speedLimit;
     private double length;
     private int segmentNumber;
-
+    
     Segment(int segmentNumber, double length, int speedLimit){
         this.segmentNumber = segmentNumber;
         this.length = length;

@@ -4,7 +4,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-// t = Vi*t + 0.5*a*t*t
+// d = Vi*t + 0.5*a*t*t
 // vf = vi + a*t
 // d = v * t
 
@@ -26,7 +26,9 @@ class Car{
     private double currentSpeed;
 
     private double location;
+    private double locationInSegment;
     
+    private int prevSegment;
     private double elapsedTime;
 
     Car(Document doc){
@@ -60,10 +62,11 @@ class Car{
 
     public void run(double timeIncrement){
         double accelInSeconds = accel / 3600;
+        double maxSpeedInSeconds = maxSpeed / 3600;
         elapsedTime += timeIncrement;
         if(state == accelerating){
-            currentSpeed += accelInSeconds * timeIncrement;
-            location += ((currentSpeed * elapsedTime) - (currentSpeed * elapsedTime-timeIncrement));
+            currentSpeed += accelInSeconds * elapsedTime;
+            location += currentSpeed * timeIncrement;
         }
         else if(state == coasting){
             location += currentSpeed * timeIncrement;
@@ -72,8 +75,9 @@ class Car{
             currentSpeed -= accelInSeconds * timeIncrement;
             location += currentSpeed * timeIncrement;
         }
-        if(elapsedTime % 30.0 <= 0.1)
-            System.out.printf("%.2f\t", location);
+        System.out.print(currentSpeed + " ");
+        // if(elapsedTime % 30.0 <= 0.1)
+            // System.out.printf("%.2f\t", location);
     }
 
     public void setState(PositionState state){

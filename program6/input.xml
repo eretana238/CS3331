@@ -6,12 +6,12 @@
         <SPEED_LIMIT> 20</SPEED_LIMIT>
         <LANES> pos int</LANES> 
     </SEGMENT>
-    <SEGMENT>
+    <!-- <SEGMENT>
         <SEGMENT_NUMBER> 3 </SEGMENT_NUMBER>
         <LENGTH> 1.0</LENGTH>
         <SPEED_LIMIT> 30</SPEED_LIMIT>
         <LANES> pos int</LANES> 
-    </SEGMENT>
+    </SEGMENT> -->
     <SEGMENT>
         <SEGMENT_NUMBER> 2 </SEGMENT_NUMBER>
         <LENGTH> 1.0</LENGTH>

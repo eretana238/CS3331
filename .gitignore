@@ -2,4 +2,3 @@
 *.class
 # exclude IDE folders
 **/.idea
-**/.vscode

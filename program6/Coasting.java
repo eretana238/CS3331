@@ -7,9 +7,9 @@ public class Coasting implements PositionState{
         this.car = car;
     }
     @Override
-    public void newPos() {
-        // TODO Auto-generated method stub
-
+    public void newPos(double timeIncrement) {
+        double newLocation = car.getLocation() + car.getCurrentSpeed() * timeIncrement;
+        car.setLocation(newLocation);
     }
 
     @Override

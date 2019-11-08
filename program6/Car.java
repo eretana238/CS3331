@@ -61,23 +61,19 @@ class Car{
     }
 
     public void run(double timeIncrement){
-        double accelInSeconds = accel / 3600;
-        double maxSpeedInSeconds = maxSpeed / 3600;
         elapsedTime += timeIncrement;
-        if(state == accelerating){
-            currentSpeed += accelInSeconds * elapsedTime;
-            location += currentSpeed * timeIncrement;
+        // run state
+        state.newPos(timeIncrement);
+
+        if(elapsedTime % 30.0 <= 0.1){
+            if(elapsedTime / 30 == 0.0){
+                System.out.print("time\tspeed\tlocation\t\t");
+                System.out.print("0\t0.00\t0.00\t\t");
+            }
+            else{
+                System.out.printf("%.0f\t%.2f\t%.2f\t\t", elapsedTime, currentSpeed*3600, location);        
+            }
         }
-        else if(state == coasting){
-            location += currentSpeed * timeIncrement;
-        }
-        else if(state == braking){
-            currentSpeed -= accelInSeconds * timeIncrement;
-            location += currentSpeed * timeIncrement;
-        }
-        System.out.print(currentSpeed + " ");
-        // if(elapsedTime % 30.0 <= 0.1)
-            // System.out.printf("%.2f\t", location);
     }
 
     public void setState(PositionState state){

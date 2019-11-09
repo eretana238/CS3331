@@ -22,7 +22,7 @@ public class Braking implements PositionState{
     }
 
     @Override
-    public void decelForCarAhead(Car front) {
+    public void decelForCarAhead(Car front, double timeIncrement) {
         System.out.println("Already braking");
 
     }

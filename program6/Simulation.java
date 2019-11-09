@@ -50,14 +50,14 @@ public class Simulation {
                 // makes sure if car has finished course, doesn't run but lets the rest of the cars to run
                 if(car.getLocation() >= course.getTotalCourseLength()) 
                     continue;
-
+                    
                 if(needsDecelerating(currentSegment.getSegmentNumber())){
                     if(course.isSpeedLimitInRange(i,currentSegment.getSegmentNumber() + 1) && car.getElapsedTime() >= i*60){
                         car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber() + 1), timeIncrement);
                         continue;
                     }
                     if(course.isCarAhead(i) && car.getElapsedTime() >= i*60){
-                        car.getState().decelForCarAhead(cars[i-1]);
+                        car.getState().decelForCarAhead(cars[i-1], timeIncrement);
                         continue;
                     }
                 }
@@ -65,7 +65,7 @@ public class Simulation {
                 if(needsAccelerating(car, currentSegment) && car.getState().getClass().getName() != "Accelerating" && car.getElapsedTime() >= i*60){
                     car.accel();
                 }
-                else if(needsConstant(car, currentSegment) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60){
+                if(needsConstant(car, currentSegment) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60){
                     car.coast();
                 }
                 car.run(timeIncrement);           

@@ -69,7 +69,6 @@ public class Course {
             }
             distanceFromSegment -= segment.getValue().getLength();
         }
-        distanceFromSegment -= 0.01;
         return segments.get(getCurrentSegment(car)).getLength() - distanceFromSegment;
     }
 
@@ -81,8 +80,8 @@ public class Course {
         // get time remaining to finish the segment, and compare time when decelerating current speed to next speed limit
         if(segments.get(nextSegment) == null) return false;
 
-        double changeToSegmentSpeedTime = Math.abs(segments.get(nextSegment).getSpeedLimit() - cars[carNumber].getCurrentSpeed())/cars[carNumber].getAccel();
-        double distanceToStartBraking = cars[carNumber].getCurrentSpeed() * changeToSegmentSpeedTime + .5 * (cars[carNumber].getAccel()/3600) * Math.pow(changeToSegmentSpeedTime, 2);
+        double changeToSegmentSpeedTime = Math.abs(segments.get(nextSegment).getSpeedLimit() - cars[carNumber].getCurrentSpeed()*3600)/cars[carNumber].getAccel();
+        double distanceToStartBraking = cars[carNumber].getCurrentSpeed() * changeToSegmentSpeedTime - .5 * (cars[carNumber].getAccel()/3600) * Math.pow(changeToSegmentSpeedTime, 2);
         
         return getRemainingDistanceOfSegment(cars[carNumber]) <= distanceToStartBraking; 
     }

@@ -21,7 +21,7 @@ public class Simulation {
     private static Document doc;
     private static Course course;
     private static Car[] cars;
-    private static double timeIncrement = 0.01;
+    private static double timeIncrement = 0.1;
      // user input and prompt
     private static String cmdInterface(Scanner in){
         System.out.println("Please input xml file name:");
@@ -40,42 +40,41 @@ public class Simulation {
             e.printStackTrace();
         }
     }
-    public static void runCars(double timeIncrement){
+    public static void runCars(){
         while(true){
             // run each car for timeIncrement
             for(int i = 0; i < cars.length; i++){
                 Car car = cars[i];
-                Segment currentSegment = course.getSegments().get(course.getCarLocationSegment(car));
+                Segment currentSegment = course.getSegments().get(course.getCurrentSegment(car));
 
-                // if(course.getSegments().size())
                 // makes sure if car has finished course, doesn't run but lets the rest of the cars to run
                 if(car.getLocation() >= course.getTotalCourseLength()) 
                     continue;
+
+                if(needsDecelerating(currentSegment.getSegmentNumber())){
+                    if(course.isSpeedLimitInRange(i,currentSegment.getSegmentNumber() + 1) && car.getElapsedTime() >= i*60){
+                        car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber() + 1), timeIncrement);
+                        continue;
+                    }
+                    if(course.isCarAhead(i) && car.getElapsedTime() >= i*60){
+                        car.getState().decelForCarAhead(cars[i-1]);
+                        continue;
+                    }
+                }
                 // i*60 <= car.getElapsedTime() makes sure that each car starts 1 minute apart from each other
                 if(needsAccelerating(car, currentSegment) && car.getState().getClass().getName() != "Accelerating" && car.getElapsedTime() >= i*60){
                     car.accel();
-                } 
+                }
                 else if(needsConstant(car, currentSegment) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60){
                     car.coast();
-                    // System.out.println("coasting");
                 }
-                else if(needsDecelerating(currentSegment.getSegmentNumber()) && course.isSpeedLimitInRange(i,course.getSegments().get(currentSegment.getSegmentNumber() + 1)) && car.getElapsedTime() >= i*60){
-                    car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber() + 1));
-                }
-
-                else if(needsDecelerating(car, currentSegment) && course.isCarAhead(i) && car.getElapsedTime() >= i*60){
-                    car.getState().decelForCarAheacd(cars[i-1]);
-                }
-                // if(course.getCarLocationSegment(car) != -1)
-                car.run(timeIncrement);            
-
+                car.run(timeIncrement);           
             }
-            if(cars[cars.length-1].getElapsedTime() % 30.0 <= 0.1)
+            if(cars[cars.length-1].getElapsedTime() % 30.0 <= timeIncrement)
                 System.out.println();
-
-            if(allCarsFinished()){
-                break;
-            }
+                if(allCarsFinished()){
+                    break;
+                }
         }
     }
     private static boolean allCarsFinished(){
@@ -87,12 +86,13 @@ public class Simulation {
     private static boolean needsDecelerating(int segmentNumber){
         if(course.getSegments().get(segmentNumber+1) != null){
             Segment nextSegment = course.getSegments().get(segmentNumber+1);
-            return nextSegment.getSpeedLimit() < course.getSegments().get(segmentNumber).getSpeedLimit();
+            Segment currentSegment = course.getSegments().get(segmentNumber);
+            return nextSegment.getSpeedLimit() <currentSegment.getSpeedLimit();
         }
         return false;
     }
     private static boolean needsAccelerating(Car car, Segment segment){
-        return car.getCurrentSpeed() != car.getMaxSpeed()/3600 && car.getCurrentSpeed() != (double)segment.getSpeedLimit()/3600;
+        return car.getCurrentSpeed() < car.getMaxSpeed()/3600 && car.getCurrentSpeed() < (double)segment.getSpeedLimit()/3600;
     }
     private static boolean needsConstant(Car car, Segment segment){
         return car.getCurrentSpeed() == car.getMaxSpeed()/3600 || car.getCurrentSpeed() == (double)segment.getSpeedLimit()/3600;
@@ -104,7 +104,7 @@ public class Simulation {
     }
 
     private static void startSIM(Car[] cars){
-        runCars(0.1);
+        runCars();
     }
 
     public static void main(String[] args) {
@@ -119,15 +119,16 @@ public class Simulation {
         setDoc(inputFile);
         setAmountOfCars();
 
+        // create car instances 
+        for(int i = 0; i < cars.length; i++){
+            cars[i] = new Car(doc);
+        }
+
         course = new Course(cars);
 
         course.setSegments(doc);
         course.setTotalCourseLength();
 
-        // create car instances 
-        for(int i = 0; i < cars.length; i++){
-            cars[i] = new Car(doc);
-        }
 
         startSIM(cars);
     }

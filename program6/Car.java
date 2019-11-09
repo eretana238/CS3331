@@ -28,7 +28,7 @@ class Car{
     private double location;
     private double locationInSegment;
     
-    private int prevSegment;
+    private int currentSegment;
     private double elapsedTime;
 
     Car(Document doc){
@@ -65,14 +65,8 @@ class Car{
         // run state
         state.newPos(timeIncrement);
 
-        if(elapsedTime % 30.0 <= 0.1){
-            if(elapsedTime / 30 == 0.0){
-                System.out.print("time\tspeed\tlocation\t\t");
-                System.out.print("0\t0.00\t0.00\t\t");
-            }
-            else{
-                System.out.printf("%.0f\t%.2f\t%.2f\t\t", elapsedTime, currentSpeed*3600, location);        
-            }
+        if(elapsedTime % 30.0 <= timeIncrement){
+            System.out.printf("%.0f\t%.2f\t%.2f\t\t", elapsedTime, currentSpeed*3600, location);        
         }
     }
 
@@ -103,6 +97,9 @@ class Car{
     }
     public void setCurrentSpeed(double currentSpeed){
         this.currentSpeed = currentSpeed;
+    }
+    public void setElapsedTime(double elapsedTime){
+        this.elapsedTime = elapsedTime;
     }
 
     public PositionState getState(){

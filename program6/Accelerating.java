@@ -15,12 +15,15 @@ public class Accelerating implements PositionState{
     }
 
     @Override
-    public void decelForSegment(Segment segment) {
-        System.out.println("decelerating for segment");
+    public void decelForSegment(Segment segment, double timeIncrement) {
+        double newSpeed = car.getCurrentSpeed() - (car.getAccel()/3600) * timeIncrement;
+        car.setCurrentSpeed(newSpeed);
+        double newLocation = car.getLocation() + car.getCurrentSpeed() * timeIncrement;
+        car.setLocation(newLocation);
     }
 
     @Override
-    public void decelForCarAheacd(Car front) {
+    public void decelForCarAhead(Car front) {
         System.out.println("decelerating for car ahead");
     }
 

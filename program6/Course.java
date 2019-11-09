@@ -38,8 +38,8 @@ public class Course {
         this.doc = doc;
     }
     public void setTotalCourseLength(){
-        for(int i = 1; i < segments.size(); i++){
-            totalCourseLength += segments.get(i).getLength();
+        for(Map.Entry<Integer,Segment> segment: segments.entrySet()){
+            totalCourseLength += segment.getValue().getLength();
         }
     }
 
@@ -48,7 +48,7 @@ public class Course {
     }
 
     // course gets the segment in which the car is in
-    public int getCarLocationSegment(Car car){
+    public int getCurrentSegment(Car car){
         double totalDistance = 0;
         for(Map.Entry<Integer, Segment> segment: segments.entrySet()){
             totalDistance += segment.getValue().getLength();
@@ -59,17 +59,32 @@ public class Course {
         // returns -1 if car finished course
         return -1;
     }
+    // course gets the distance ran relative to the current course the car is in
+    public double getRemainingDistanceOfSegment(Car car){
+        double distanceFromSegment = car.getLocation();
+        int currentSegment = 1;
+        for(Map.Entry<Integer, Segment> segment: segments.entrySet()){
+            if(distanceFromSegment < segment.getValue().getLength()){
+                break;
+            }
+            distanceFromSegment -= segment.getValue().getLength();
+        }
+        distanceFromSegment -= 0.01;
+        return segments.get(getCurrentSegment(car)).getLength() - distanceFromSegment;
+    }
 
     public double getTotalCourseLength(){
         return this.totalCourseLength;
     }
-    public boolean isSpeedLimitInRange(int carNumber, Segment nextSegment){
+    
+    public boolean isSpeedLimitInRange(int carNumber, int nextSegment){
         // get time remaining to finish the segment, and compare time when decelerating current speed to next speed limit
-        double changeToSegmentSpeedTime = Math.abs(nextSegment.getSpeedLimit() - cars[carNumber].getCurrentSpeed())/cars[carNumber].getAccel();
-        double distanceToStartBraking = .5 * (cars[carNumber].getAccel()/3600) * Math.pow(changeToSegmentSpeedTime, 2);
+        if(segments.get(nextSegment) == null) return false;
+
+        double changeToSegmentSpeedTime = Math.abs(segments.get(nextSegment).getSpeedLimit() - cars[carNumber].getCurrentSpeed())/cars[carNumber].getAccel();
+        double distanceToStartBraking = cars[carNumber].getCurrentSpeed() * changeToSegmentSpeedTime + .5 * (cars[carNumber].getAccel()/3600) * Math.pow(changeToSegmentSpeedTime, 2);
         
-        
-        return false;
+        return getRemainingDistanceOfSegment(cars[carNumber]) <= distanceToStartBraking; 
     }
     public boolean isCarAhead(int carNumber){
         // check if current car speed can reach the car in front

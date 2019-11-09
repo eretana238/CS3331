@@ -1,6 +1,6 @@
 public interface PositionState{
     public void newPos(double timeIncrement);
     public void needToBrake();
-    public void decelForSegment(Segment segment);
-    public void decelForCarAheacd(Car front);
+    public void decelForSegment(Segment segment, double timeIncrement);
+    public void decelForCarAhead(Car front);
 }

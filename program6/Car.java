@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 class Car{
     private Driver driver;
     private static int driverNumber;
+    private int carNumber;
 
     private PositionState accelerating;
     private PositionState coasting;
@@ -56,6 +57,7 @@ class Car{
             driver = new Driver(name, driverTypeName);
             driver.setDoc(this.doc);
             driver.setDriverType(driverTypeName);
+            setCarNumber(driverNumber);
             driverNumber++;
         }
     }
@@ -101,6 +103,9 @@ class Car{
     public void setElapsedTime(double elapsedTime){
         this.elapsedTime = elapsedTime;
     }
+    public void setCarNumber(int carNumber){
+        this.carNumber = carNumber;
+    }
 
     public PositionState getState(){
         return state;
@@ -131,5 +136,8 @@ class Car{
     }
     public double getElapsedTime(){
         return elapsedTime;
+    }
+    public int getCarNumber(){
+        return carNumber;
     }
 }

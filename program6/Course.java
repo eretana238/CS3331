@@ -83,8 +83,23 @@ public class Course {
         double changeToSegmentSpeedTime = Math.abs(segments.get(nextSegment).getSpeedLimit() - cars[carNumber].getCurrentSpeed()*3600)/cars[carNumber].getAccel();
         double distanceToStartBraking = cars[carNumber].getCurrentSpeed() * changeToSegmentSpeedTime - .5 * (cars[carNumber].getAccel()/3600) * Math.pow(changeToSegmentSpeedTime, 2);
         
-        return getRemainingDistanceOfSegment(cars[carNumber]) <= distanceToStartBraking; 
+        double remainingDist = getRemainingDistanceOfSegment(cars[carNumber]) - distanceToStartBraking;
+        boolean startDecel =  remainingDist <= distanceToStartBraking; 
+        return !isSameSpeed(carNumber, nextSegment) && startDecel; 
     }
+
+    public boolean isSameSpeed(int carNumber, int nextSegment){
+        double threshold = 0.0001;
+        // temp
+        double speedLimit = (double)segments.get(nextSegment).getSpeedLimit()/3600;
+        double currentSpeed = cars[carNumber].getCurrentSpeed(); 
+        if(Math.abs(speedLimit - currentSpeed) <= threshold){
+            cars[carNumber].setState(cars[carNumber].getCoastingState());
+            return true;
+        }
+        return false;
+    }       
+
     public boolean isCarAhead(int carNumber){
         // check if current car speed can reach the car in front
         return false;

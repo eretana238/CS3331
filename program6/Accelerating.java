@@ -22,6 +22,7 @@ public class Accelerating implements PositionState{
         car.setCurrentSpeed(newSpeed);
         double newLocation = car.getLocation() + car.getCurrentSpeed() * timeIncrement;
         car.setLocation(newLocation);
+        car.setState(car.getCoastingState());
         if(elapsedTime % 30.0 <= timeIncrement){
             System.out.printf("%.0f\t%.2f\t%.2f\t\t", elapsedTime, newSpeed*3600, newLocation);        
         }

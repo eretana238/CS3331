@@ -27,9 +27,7 @@ class Car{
     private double currentSpeed;
 
     private double location;
-    private double locationInSegment;
     
-    private int currentSegment;
     private double elapsedTime;
 
     Car(Document doc){

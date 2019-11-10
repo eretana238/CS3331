@@ -71,11 +71,12 @@ public class Simulation {
                 car.run(timeIncrement);           
             }
             // prints new line
-            if(cars[cars.length-1].getElapsedTime() % 30.0 <= timeIncrement)
+            if(cars[cars.length-1].getElapsedTime() % 30.0 <= timeIncrement){
                 System.out.println();
-                if(allCarsFinished()){
-                    break;
-                }
+            }
+            if(allCarsFinished()){
+                break;
+            }
         }
     }
     private static boolean allCarsFinished(){
@@ -95,16 +96,20 @@ public class Simulation {
     private static boolean needsAccelerating(Car car, int segmentNumber){
         // checks if speed is the same as next segment and if car is close to ending segment
         // prevents accelerating when segment is about to end
+        double threshold = -0.001;
         if(segmentNumber < course.getSegments().size()){
-            boolean isCarSpeedEqual = (car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber+1).getSpeedLimit()/3600) < 0.0001;
-            boolean isCarCloseToSegment = course.getRemainingDistanceOfSegment(car) < 0.001;
-            if(isCarSpeedEqual && isCarCloseToSegment) return false;
-            else return car.getCurrentSpeed() < car.getMaxSpeed()/3600 && car.getCurrentSpeed() < (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600;            
-             
+            boolean isCarSpeedEqual = (car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber+1).getSpeedLimit()/3600) < threshold;
+            boolean isCarCloseToSegment = course.getRemainingDistanceOfSegment(car) < threshold;
+
+            boolean isLessThanMaxSpeed = car.getCurrentSpeed() - car.getMaxSpeed()/3600 < threshold;
+            boolean isLessThanSpeedLimit = car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600 < threshold;
+            return (!isCarSpeedEqual || !isCarCloseToSegment) && isLessThanMaxSpeed && isLessThanSpeedLimit;            
         }
         else{
             // checks if car current speed is below current segment speed limit
-            return car.getCurrentSpeed() < car.getMaxSpeed()/3600 && car.getCurrentSpeed() < (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600;            
+            boolean isLessThanMaxSpeed = car.getCurrentSpeed() - car.getMaxSpeed()/3600 < threshold;
+            boolean isLessThanSpeedLimit = car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600 < threshold;
+            return isLessThanMaxSpeed && isLessThanSpeedLimit;
         }
     }
     private static boolean needsConstant(Car car, Segment currentSegment){

@@ -8,6 +8,8 @@
 // The program uses an integral based approach to figure out the distance for every 30 seconds and finds the location regardless
 // of driver type (driving style) and speed.
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import java.io.File;
@@ -20,8 +22,8 @@ import org.w3c.dom.Document;
 public class Simulation {
     private static Document doc;
     private static Course course;
-    private static Car[] cars;
-    private static double timeIncrement = 0.1;
+    private static List<Car> cars = new ArrayList<Car>();
+    private static double timeIncrement = 0.001;
      // user input and prompt
     private static String cmdInterface(Scanner in){
         System.out.println("Please input xml file name:");
@@ -43,23 +45,29 @@ public class Simulation {
     public static void runCars(){
         while(true){
             // run each car for timeIncrement
-            for(int i = 0; i < cars.length; i++){
-                Car car = cars[i];
+            for(int i = 0; i < cars.size(); i++){
+                Car car = cars.get(i);
                 Segment currentSegment = course.getSegments().get(course.getCurrentSegment(car));
 
                 // makes sure if car has finished course, doesn't run but lets the rest of the cars to run
-                if(car.getLocation() >= course.getTotalCourseLength()) 
+                if(car.getLocation() >= course.getTotalCourseLength()){
+                    // TODO: timeIncrement elapsed time
+                    if(cars.get(cars.size()-1).getElapsedTime() % 30.0 <= timeIncrement)
+                        System.out.printf("%.0f\t%.2f\t%.2f\t\t", car.getElapsedTime(),car.getCurrentSpeed()*3600, car.getLocation());
                     continue;
-                    
+                }
                 if(needsDecelerating(currentSegment.getSegmentNumber())){
+                    // car ahead has priority
+                    if(course.isCarAhead(i) && car.getElapsedTime() >= i*60){
+                        car.getState().decelForCarAhead(cars.get(i-1), timeIncrement);
+                        continue;
+                    }
+
                     if(course.isSpeedLimitInRange(i,currentSegment.getSegmentNumber() + 1) && car.getElapsedTime() >= i*60){
                         car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber() + 1), timeIncrement);
                         continue;
                     }
-                    if(course.isCarAhead(i) && car.getElapsedTime() >= i*60){
-                        car.getState().decelForCarAhead(cars[i-1], timeIncrement);
-                        continue;
-                    }
+                    
                 }
                 // i*60 <= car.getElapsedTime() makes sure that each car starts 1 minute apart from each other
                 if(needsAccelerating(car, currentSegment.getSegmentNumber()) && car.getState().getClass().getName() != "Accelerating" && car.getElapsedTime() >= i*60)
@@ -71,7 +79,7 @@ public class Simulation {
                 car.run(timeIncrement);           
             }
             // prints new line
-            if(cars[cars.length-1].getElapsedTime() % 30.0 <= timeIncrement){
+            if(cars.get(cars.size()-1).getElapsedTime() % 30.0 <= timeIncrement){
                 System.out.println();
             }
             if(allCarsFinished()){
@@ -80,8 +88,8 @@ public class Simulation {
         }
     }
     private static boolean allCarsFinished(){
-        for(int i = 0; i < cars.length; i++){
-            if(cars[i].getLocation() < course.getTotalCourseLength()) return false;
+        for(int i = 0; i < cars.size(); i++){
+            if(cars.get(i).getLocation() < course.getTotalCourseLength()) return false;
         }
         return true;
     }
@@ -89,39 +97,49 @@ public class Simulation {
         if(course.getSegments().get(segmentNumber+1) != null){
             Segment nextSegment = course.getSegments().get(segmentNumber+1);
             Segment currentSegment = course.getSegments().get(segmentNumber);
-            return nextSegment.getSpeedLimit() <currentSegment.getSpeedLimit();
+            return nextSegment.getSpeedLimit() < currentSegment.getSpeedLimit();
         }
         return false;
     }
     private static boolean needsAccelerating(Car car, int segmentNumber){
         // checks if speed is the same as next segment and if car is close to ending segment
         // prevents accelerating when segment is about to end
-        double threshold = -0.001;
+        double threshold = -(timeIncrement/100);
+        
         if(segmentNumber < course.getSegments().size()){
             boolean isCarSpeedEqual = (car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber+1).getSpeedLimit()/3600) < threshold;
             boolean isCarCloseToSegment = course.getRemainingDistanceOfSegment(car) < threshold;
 
-            boolean isLessThanMaxSpeed = car.getCurrentSpeed() - car.getMaxSpeed()/3600 < threshold;
-            boolean isLessThanSpeedLimit = car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600 < threshold;
-            return (!isCarSpeedEqual || !isCarCloseToSegment) && isLessThanMaxSpeed && isLessThanSpeedLimit;            
+            boolean isSpeedLessThanMaxSpeed = car.getCurrentSpeed() - car.getMaxSpeed()/3600 < threshold;
+            boolean isSpeedLessThanSpeedLimit = car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600 < threshold;
+
+            return (!isCarSpeedEqual || !isCarCloseToSegment) && isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;            
         }
         else{
             // checks if car current speed is below current segment speed limit
-            boolean isLessThanMaxSpeed = car.getCurrentSpeed() - car.getMaxSpeed()/3600 < threshold;
-            boolean isLessThanSpeedLimit = car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600 < threshold;
-            return isLessThanMaxSpeed && isLessThanSpeedLimit;
+            boolean isSpeedLessThanMaxSpeed = car.getCurrentSpeed() - car.getMaxSpeed()/3600 < threshold;
+            boolean isSpeedLessThanSpeedLimit = car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600 < threshold;
+
+            return isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;
         }
     }
     private static boolean needsConstant(Car car, Segment currentSegment){
-        return car.getCurrentSpeed() == car.getMaxSpeed()/3600 || car.getCurrentSpeed() == (double)currentSegment.getSpeedLimit()/3600;
+        double threshold = timeIncrement/700;
+        double speedDiffMax = car.getCurrentSpeed() - car.getMaxSpeed()/3600;
+        boolean isSpeedEqualToMaxSpeed =  speedDiffMax < threshold && speedDiffMax > -threshold;
+        
+        double speedDiffLimit = car.getCurrentSpeed() - (double)currentSegment.getSpeedLimit()/3600;
+        boolean isSpeedEqualToSpeedLimit = speedDiffLimit < threshold && speedDiffLimit > -threshold ;
+
+        return isSpeedEqualToMaxSpeed || isSpeedEqualToSpeedLimit;
     }
 
-    private static void setAmountOfCars(){
+    private static int getAmountOfCars(){
         int amountOfCars = doc.getElementsByTagName("DRIVER").getLength();
-        cars = new Car[amountOfCars];
+        return amountOfCars;
     }
 
-    private static void startSIM(Car[] cars){
+    private static void startSIM(List<Car> cars){
         runCars();
     }
 
@@ -135,15 +153,14 @@ public class Simulation {
         }
 
         setDoc(inputFile);
-        setAmountOfCars();
 
         // create car instances 
-        for(int i = 0; i < cars.length; i++){
-            cars[i] = new Car(doc);
+        for(int i = 0; i < getAmountOfCars(); i++){
+            cars.add(new Car(doc));
         }
+        course = Course.getInstance();
 
-        course = new Course(cars);
-
+        course.setCars(cars);
         course.setSegments(doc);
         course.setTotalCourseLength();
 

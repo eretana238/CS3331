@@ -27,6 +27,7 @@ class Car{
     private double currentSpeed;
 
     private double location;
+    private int laneNumber;
     
     private double elapsedTime;
 
@@ -59,6 +60,9 @@ class Car{
             driverNumber++;
         }
     }
+    public boolean isInSameLane(int lane){
+        return laneNumber == lane;
+    }
 
     public void run(double timeIncrement){
         elapsedTime += timeIncrement;
@@ -66,7 +70,7 @@ class Car{
         state.newPos(timeIncrement);
 
         if(elapsedTime % 30.0 <= timeIncrement){
-            System.out.printf("%.0f\t%.2f\t%.2f\t\t", elapsedTime, currentSpeed*3600, location);        
+            System.out.printf("%.0f\t%.2f\t%.2f\t\t", elapsedTime, currentSpeed*3600, location);
         }
     }
 
@@ -104,6 +108,9 @@ class Car{
     public void setCarNumber(int carNumber){
         this.carNumber = carNumber;
     }
+    public void setLaneNumber(int laneNumber){
+        this.laneNumber = laneNumber;
+    }
 
     public PositionState getState(){
         return state;
@@ -137,5 +144,8 @@ class Car{
     }
     public int getCarNumber(){
         return carNumber;
+    }
+    public int getLaneNumber(){
+        return laneNumber;
     }
 }

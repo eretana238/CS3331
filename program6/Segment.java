@@ -5,11 +5,13 @@ public class Segment {
     private int speedLimit;
     private double length;
     private int segmentNumber;
+    private int lanes;
     
-    Segment(int segmentNumber, double length, int speedLimit){
+    Segment(int segmentNumber, double length, int speedLimit, int lanes){
         this.segmentNumber = segmentNumber;
         this.length = length;
         this.speedLimit = speedLimit;
+        this.lanes = lanes;
     }
 
     public int getSpeedLimit(){
@@ -21,6 +23,9 @@ public class Segment {
     public int getSegmentNumber(){
         return segmentNumber;
     }
+    public int getLanes(){
+        return lanes;
+    }
 
     public void setSpeedLimit(int speedLimit){
         this.speedLimit = speedLimit;
@@ -30,5 +35,8 @@ public class Segment {
     }
     public void setNumber(int segmentNumber){
         this.segmentNumber = segmentNumber;
+    }
+    public void setLanes(int lanes){
+        this.lanes = lanes;
     }
 }

@@ -8,6 +8,8 @@ public class Braking implements PositionState{
     }
     @Override
     public void newPos(double timeIncrement) {
+        double elapsedTime = car.getElapsedTime() + timeIncrement;
+        car.setElapsedTime(elapsedTime);
         double newSpeed = car.getCurrentSpeed() - (car.getAccel()/3600) * timeIncrement;
         car.setCurrentSpeed(newSpeed);
         double newLocation = car.getLocation() + car.getCurrentSpeed() * timeIncrement;

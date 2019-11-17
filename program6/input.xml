@@ -4,25 +4,25 @@
         <SEGMENT_NUMBER> 1</SEGMENT_NUMBER>
         <LENGTH> 1.0</LENGTH>
         <SPEED_LIMIT> 20</SPEED_LIMIT>
-        <LANES>3</LANES> 
+        <LANES>1</LANES> 
     </SEGMENT>
     <SEGMENT>
         <SEGMENT_NUMBER> 3 </SEGMENT_NUMBER>
         <LENGTH> 1.0</LENGTH>
         <SPEED_LIMIT> 30</SPEED_LIMIT>
-        <LANES>2</LANES> 
+        <LANES>1</LANES> 
     </SEGMENT>
     <SEGMENT>
         <SEGMENT_NUMBER> 2 </SEGMENT_NUMBER>
         <LENGTH> 1.0</LENGTH>
         <SPEED_LIMIT> 60</SPEED_LIMIT>
-        <LANES> 1</LANES> 
+        <LANES>1</LANES> 
     </SEGMENT>
     
     <DRIVER_TYPE>
         <TYPE_NAME>Aggressive</TYPE_NAME>
         <FOLLOW_TIME>1.0</FOLLOW_TIME>
-        <SPEED_LIMIT> 120.0 </SPEED_LIMIT>
+        <SPEED_LIMIT> 30.0 </SPEED_LIMIT>
         <MAX_ACCELERATION>20.0</MAX_ACCELERATION>
     </DRIVER_TYPE>
     <DRIVER_TYPE>

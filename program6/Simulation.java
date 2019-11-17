@@ -10,6 +10,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import java.io.File;
@@ -30,6 +31,7 @@ public class Simulation {
         String fileName = in.nextLine();
         return fileName;
     }
+
     // sets the document file form xml
     private static void setDoc(File inputFile){
         try {
@@ -42,21 +44,59 @@ public class Simulation {
             e.printStackTrace();
         }
     }
-    public static void runCars(){
+
+    private static int getMaxResultSize(){
+        int max = -1;
+        for(int i = 0; i < cars.size(); i++){
+            if(max < cars.get(i).getResults().size())
+                max = cars.get(i).getResults().size();
+        }
+        return max;
+    }
+
+    private static void printCarResults(){
+        for(int i = 0; i < cars.size(); i++){
+            System.out.print("TIME\tSPEED\tDISTANCE\t");
+        }
+        System.out.println();
+        for(int j = 0; j < getMaxResultSize(); j++){
+            for(int i = 0; i < cars.size(); i++){
+                // check if the j is at the size of the car.results, then repeat last value
+                if(j < cars.get(i).getResults().size()){
+                    ArrayList<Double> result = cars.get(i).getResults().get(j);
+                    System.out.printf("%d\t%.2f\t%.2f\t\t", j*30,result.get(0),result.get(1));
+                }
+                else{
+                    int size = cars.get(i).getResults().size();
+                    ArrayList<Double> result = cars.get(i).getResults().get(size-1);
+                    System.out.printf("%d\t%.2f\t%.2f\t\t", j*30,result.get(0),result.get(1));
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    private static void setCarLaneNumber(Car car){
+        int laneNumber = car.getCarNumber() % course.getSegments().get(course.getCurrentSegment(car)).getLanes();
+        if(car.getLaneNumber() != laneNumber){
+            car.setLaneNumber(laneNumber);
+        }
+    }
+
+    private static void runCars(){
         while(true){
             // run each car for timeIncrement
             for(int i = 0; i < cars.size(); i++){
                 Car car = cars.get(i);
-                Segment currentSegment = course.getSegments().get(course.getCurrentSegment(car));
-
+                Map<Integer, Segment> segments = course.getSegments();
+                Segment currentSegment = segments.get(course.getCurrentSegment(car));
                 // makes sure if car has finished course, doesn't run but lets the rest of the cars to run
                 if(car.getLocation() >= course.getTotalCourseLength()){
-                    // TODO: timeIncrement elapsed time
-                    if(cars.get(cars.size()-1).getElapsedTime() % 30.0 <= timeIncrement)
-                        System.out.printf("%.0f\t%.2f\t%.2f\t\t", car.getElapsedTime(),car.getCurrentSpeed()*3600, car.getLocation());
+                    car.setLocation(100.0);
                     continue;
                 }
-                if(needsDecelerating(currentSegment.getSegmentNumber())){
+                setCarLaneNumber(car);
+                if(car.needsDecelerating(course, course.getCurrentSegment(car))){
                     // car ahead has priority
                     if(course.isCarAhead(i) && car.getElapsedTime() >= i*60){
                         car.getState().decelForCarAhead(cars.get(i-1), timeIncrement);
@@ -67,20 +107,22 @@ public class Simulation {
                         car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber() + 1), timeIncrement);
                         continue;
                     }
-                    
                 }
                 // i*60 <= car.getElapsedTime() makes sure that each car starts 1 minute apart from each other
-                if(needsAccelerating(car, currentSegment.getSegmentNumber()) && car.getState().getClass().getName() != "Accelerating" && car.getElapsedTime() >= i*60)
+                if(car.needsAccelerating(course, currentSegment.getSegmentNumber(), timeIncrement) && car.getState().getClass().getName() != "Accelerating" && car.getElapsedTime() >= i*60)
                     car.accel();
                 
-                if(needsConstant(car, currentSegment) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60)
+                if(car.needsConstant(currentSegment, timeIncrement) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60)
                     car.coast();
                 
-                car.run(timeIncrement);           
-            }
-            // prints new line
-            if(cars.get(cars.size()-1).getElapsedTime() % 30.0 <= timeIncrement){
-                System.out.println();
+                car.run(timeIncrement); 
+
+                if(car.getElapsedTime() % 30.0 <= timeIncrement){
+                    ArrayList<Double> result = new ArrayList<Double>();
+                    result.add(car.getCurrentSpeed()*3600);
+                    result.add(car.getLocation());
+                    car.addResult(result);
+                }
             }
             if(allCarsFinished()){
                 break;
@@ -93,46 +135,6 @@ public class Simulation {
         }
         return true;
     }
-    private static boolean needsDecelerating(int segmentNumber){
-        if(course.getSegments().get(segmentNumber+1) != null){
-            Segment nextSegment = course.getSegments().get(segmentNumber+1);
-            Segment currentSegment = course.getSegments().get(segmentNumber);
-            return nextSegment.getSpeedLimit() < currentSegment.getSpeedLimit();
-        }
-        return false;
-    }
-    private static boolean needsAccelerating(Car car, int segmentNumber){
-        // checks if speed is the same as next segment and if car is close to ending segment
-        // prevents accelerating when segment is about to end
-        double threshold = -(timeIncrement/100);
-        
-        if(segmentNumber < course.getSegments().size()){
-            boolean isCarSpeedEqual = (car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber+1).getSpeedLimit()/3600) < threshold;
-            boolean isCarCloseToSegment = course.getRemainingDistanceOfSegment(car) < threshold;
-
-            boolean isSpeedLessThanMaxSpeed = car.getCurrentSpeed() - car.getMaxSpeed()/3600 < threshold;
-            boolean isSpeedLessThanSpeedLimit = car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600 < threshold;
-
-            return (!isCarSpeedEqual || !isCarCloseToSegment) && isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;            
-        }
-        else{
-            // checks if car current speed is below current segment speed limit
-            boolean isSpeedLessThanMaxSpeed = car.getCurrentSpeed() - car.getMaxSpeed()/3600 < threshold;
-            boolean isSpeedLessThanSpeedLimit = car.getCurrentSpeed() - (double)course.getSegments().get(segmentNumber).getSpeedLimit()/3600 < threshold;
-
-            return isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;
-        }
-    }
-    private static boolean needsConstant(Car car, Segment currentSegment){
-        double threshold = timeIncrement/700;
-        double speedDiffMax = car.getCurrentSpeed() - car.getMaxSpeed()/3600;
-        boolean isSpeedEqualToMaxSpeed =  speedDiffMax < threshold && speedDiffMax > -threshold;
-        
-        double speedDiffLimit = car.getCurrentSpeed() - (double)currentSegment.getSpeedLimit()/3600;
-        boolean isSpeedEqualToSpeedLimit = speedDiffLimit < threshold && speedDiffLimit > -threshold ;
-
-        return isSpeedEqualToMaxSpeed || isSpeedEqualToSpeedLimit;
-    }
 
     private static int getAmountOfCars(){
         int amountOfCars = doc.getElementsByTagName("DRIVER").getLength();
@@ -141,6 +143,7 @@ public class Simulation {
 
     private static void startSIM(List<Car> cars){
         runCars();
+        printCarResults();
     }
 
     public static void main(String[] args) {
@@ -162,6 +165,7 @@ public class Simulation {
 
         course.setCars(cars);
         course.setSegments(doc);
+        // course.createCircularCourse();
         course.setTotalCourseLength();
 
 

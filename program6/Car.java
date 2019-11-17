@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -12,6 +16,9 @@ class Car{
     private Driver driver;
     private static int driverNumber;
     private int carNumber;
+    private int laneNumber;
+
+    private ArrayList<ArrayList<Double>> results = new ArrayList<ArrayList<Double>>();
 
     private PositionState accelerating;
     private PositionState coasting;
@@ -27,7 +34,6 @@ class Car{
     private double currentSpeed;
 
     private double location;
-    private int laneNumber;
     
     private double elapsedTime;
 
@@ -64,14 +70,54 @@ class Car{
         return laneNumber == lane;
     }
 
+    public boolean needsDecelerating(Course course, int currentSegment){
+        if(course.getSegments().get(currentSegment+1) != null){
+            double currentSpeedLimit = course.getSegments().get(currentSegment).getSpeedLimit();
+            double nextSpeedLimit = course.getSegments().get(currentSegment+1).getSpeedLimit();
+            boolean decreasingSpeedLimits = currentSpeedLimit > nextSpeedLimit;
+            return course.isCarAhead(carNumber) || decreasingSpeedLimits && currentSpeed*3600 > nextSpeedLimit;
+        }
+        
+        return course.isCarAhead(carNumber);
+    }
+    public boolean needsAccelerating(Course course, int currentSegment, double timeIncrement){
+        // checks if speed is the same as next segment and if car is close to ending segment
+        // prevents accelerating when segment is about to end
+        double threshold = -(timeIncrement/100);
+        Map<Integer, Segment> segments = course.getSegments();
+        
+        if(segments.get(currentSegment).getSegmentNumber() < segments.size()){
+            boolean isCarSpeedEqual = (getCurrentSpeed() - (double)segments.get(currentSegment+1).getSpeedLimit()/3600) < threshold;
+            boolean isCarCloseToSegment = course.getRemainingDistanceOfSegment(this) < threshold;
+
+            boolean isSpeedLessThanMaxSpeed = getCurrentSpeed() - getMaxSpeed()/3600 < threshold;
+            boolean isSpeedLessThanSpeedLimit = getCurrentSpeed() - (double)segments.get(currentSegment).getSpeedLimit()/3600 < threshold;
+
+            return (!isCarSpeedEqual || !isCarCloseToSegment) && isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;            
+        }
+        else{
+            // checks if car current speed is below current segment speed limit
+            boolean isSpeedLessThanMaxSpeed = getCurrentSpeed() - getMaxSpeed()/3600 < threshold;
+            boolean isSpeedLessThanSpeedLimit = getCurrentSpeed() - (double)segments.get(currentSegment).getSpeedLimit()/3600 < threshold;
+
+            return isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;
+        }
+    }
+    public boolean needsConstant(Segment currentSegment, double timeIncrement){
+        double threshold = timeIncrement/700;
+        double speedDiffMax = getCurrentSpeed() - getMaxSpeed()/3600;
+        boolean isSpeedEqualToMaxSpeed =  speedDiffMax < threshold && speedDiffMax > -threshold;
+        
+        double speedDiffLimit = getCurrentSpeed() - (double)currentSegment.getSpeedLimit()/3600;
+        boolean isSpeedEqualToSpeedLimit = speedDiffLimit < threshold && speedDiffLimit > -threshold ;
+
+        return isSpeedEqualToMaxSpeed || isSpeedEqualToSpeedLimit;
+    }
+
     public void run(double timeIncrement){
         elapsedTime += timeIncrement;
         // run state
         state.newPos(timeIncrement);
-
-        if(elapsedTime % 30.0 <= timeIncrement){
-            System.out.printf("%.0f\t%.2f\t%.2f\t\t", elapsedTime, currentSpeed*3600, location);
-        }
     }
 
     public void setState(PositionState state){
@@ -111,6 +157,9 @@ class Car{
     public void setLaneNumber(int laneNumber){
         this.laneNumber = laneNumber;
     }
+    public void addResult(ArrayList<Double> result){
+        this.results.add(result);
+    }
 
     public PositionState getState(){
         return state;
@@ -147,5 +196,8 @@ class Car{
     }
     public int getLaneNumber(){
         return laneNumber;
+    }
+    public ArrayList<ArrayList<Double>> getResults(){
+        return this.results;
     }
 }

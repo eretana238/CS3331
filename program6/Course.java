@@ -123,12 +123,14 @@ public class Course {
     }
 
     public boolean isCarAhead(int carNumber){
-        // check if current car speed can reach the car in front
         ArrayList<Car> carsInLane = getCarsInSameLane(cars.get(carNumber));
         for(int i = 0; i < carsInLane.size(); i++){
+            // only compares the cars that are in front of current car and in same lane
             if(carNumber != i && cars.get(i).getLocation() > cars.get(carNumber).getLocation()){
+                double threshold = 0.0001;
                 double distance = cars.get(carNumber).getCurrentSpeed() * cars.get(carNumber).getDriver().getDriverType().getFollowTime();
-                
+                double diff = Math.abs(cars.get(carNumber).getLocation() - cars.get(i).getLocation()); 
+                if(diff - distance < threshold) return true;
             }
         }
         return false;

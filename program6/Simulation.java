@@ -1,16 +1,12 @@
 // Author: Esteban Retana
 // Second latest commit: Modified setConstantSpeedLocation for considering max driver speed
-// Latest commit: Added 2nd method setDistanceInIntervals for car upfront
+// Latest commit: 
 // Date: 10/13
 
-// Description: Created a program that finds the location of a car in a track composed of different segments for every 30 sec intervals.
-// The program uses an xml file and stores each segment's data to compute the location
-// The program uses an integral based approach to figure out the distance for every 30 seconds and finds the location regardless
-// of driver type (driving style) and speed.
+// Description: 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import java.io.File;
@@ -88,35 +84,35 @@ public class Simulation {
             // run each car for timeIncrement
             for(int i = 0; i < cars.size(); i++){
                 Car car = cars.get(i);
-                Map<Integer, Segment> segments = course.getSegments();
-                Segment currentSegment = segments.get(course.getCurrentSegment(car));
+                ArrayList<Segment> segments = course.getSegments();
                 // makes sure if car has finished course, doesn't run but lets the rest of the cars to run
                 if(car.getLocation() >= course.getTotalCourseLength()){
-                    car.setLocation(100.0);
+                    car.setLocation(course.getTotalCourseLength()*3);
                     continue;
                 }
+                Segment currentSegment = segments.get(course.getCurrentSegment(car));
+                
                 setCarLaneNumber(car);
+                // i*60 <= car.getElapsedTime() makes sure that each car starts 1 minute apart from each other
+                if(car.needsAccelerating(course, currentSegment.getSegmentNumber()-1, timeIncrement) && car.getElapsedTime() >= i*60)
+                    car.accel();
+
+                if(car.needsConstant(course, currentSegment, timeIncrement) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60)
+                    car.coast();
+
                 if(car.needsDecelerating(course, course.getCurrentSegment(car))){
                     // car ahead has priority
                     if(course.isCarAhead(i) && car.getElapsedTime() >= i*60){
                         car.getState().decelForCarAhead(cars.get(i-1), timeIncrement);
-                        continue;
                     }
 
-                    if(course.isSpeedLimitInRange(i,currentSegment.getSegmentNumber() + 1) && car.getElapsedTime() >= i*60){
-                        car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber() + 1), timeIncrement);
-                        continue;
+                    else if(course.isSpeedLimitInRange(i,currentSegment.getSegmentNumber()) && car.getElapsedTime() >= i*60){
+                        car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber()), timeIncrement);
                     }
                 }
-                // i*60 <= car.getElapsedTime() makes sure that each car starts 1 minute apart from each other
-                if(car.needsAccelerating(course, currentSegment.getSegmentNumber(), timeIncrement) && car.getState().getClass().getName() != "Accelerating" && car.getElapsedTime() >= i*60)
-                    car.accel();
+                System.out.println(car.getLocation() + " " + car.getCurrentSpeed());
+                car.run(timeIncrement);     
                 
-                if(car.needsConstant(currentSegment, timeIncrement) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60)
-                    car.coast();
-                
-                car.run(timeIncrement); 
-
                 if(car.getElapsedTime() % 30.0 <= timeIncrement){
                     ArrayList<Double> result = new ArrayList<Double>();
                     result.add(car.getCurrentSpeed()*3600);
@@ -143,7 +139,7 @@ public class Simulation {
 
     private static void startSIM(List<Car> cars){
         runCars();
-        printCarResults();
+        // printCarResults();
     }
 
     public static void main(String[] args) {
@@ -165,7 +161,9 @@ public class Simulation {
 
         course.setCars(cars);
         course.setSegments(doc);
-        // course.createCircularCourse();
+        // circular course
+        int laps = 2;
+        course.createCircularCourse(laps);
         course.setTotalCourseLength();
 
 

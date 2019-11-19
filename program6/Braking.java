@@ -1,6 +1,5 @@
-/**
- * Braking
- */
+import java.util.ArrayList;
+
 public class Braking implements PositionState{
     Car car;
     public Braking(Car car){
@@ -14,7 +13,6 @@ public class Braking implements PositionState{
         car.setCurrentSpeed(newSpeed);
         double newLocation = car.getLocation() + car.getCurrentSpeed() * timeIncrement;
         car.setLocation(newLocation);
-
     }
 
     @Override

@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -71,11 +69,14 @@ class Car{
     }
 
     public boolean needsDecelerating(Course course, int currentSegment){
-        if(course.getSegments().get(currentSegment+1) != null){
+        if(state.getClass().getName() == "Braking") return false;
+        if(currentSpeed > course.getSegments().get(currentSegment).getSpeedLimit()/3600) return true;
+        // determine if the coures.getSegements().size()-1
+        if(currentSegment < course.getSegments().size()-1){
             double currentSpeedLimit = course.getSegments().get(currentSegment).getSpeedLimit();
             double nextSpeedLimit = course.getSegments().get(currentSegment+1).getSpeedLimit();
             boolean decreasingSpeedLimits = currentSpeedLimit > nextSpeedLimit;
-            return course.isCarAhead(carNumber) || decreasingSpeedLimits && currentSpeed*3600 > nextSpeedLimit;
+            return (course.isCarAhead(carNumber) || decreasingSpeedLimits) && currentSpeed > nextSpeedLimit/3600;
         }
         
         return course.isCarAhead(carNumber);
@@ -83,35 +84,42 @@ class Car{
     public boolean needsAccelerating(Course course, int currentSegment, double timeIncrement){
         // checks if speed is the same as next segment and if car is close to ending segment
         // prevents accelerating when segment is about to end
-        double threshold = -(timeIncrement/100);
-        Map<Integer, Segment> segments = course.getSegments();
+        if(state.getClass().getName() == "Accelerating") return false;
+
+        double threshold = timeIncrement/100;
+        ArrayList<Segment> segments = course.getSegments();
         
         if(segments.get(currentSegment).getSegmentNumber() < segments.size()){
-            boolean isCarSpeedEqual = (getCurrentSpeed() - (double)segments.get(currentSegment+1).getSpeedLimit()/3600) < threshold;
-            boolean isCarCloseToSegment = course.getRemainingDistanceOfSegment(this) < threshold;
+            double speedDiff = getCurrentSpeed() - (double)segments.get(currentSegment+1).getSpeedLimit()/3600;
+            boolean isCarSpeedEqual = speedDiff < threshold && speedDiff > -threshold;
+            boolean isCarCloseToSegment = course.isSpeedLimitInRange(carNumber, currentSegment+1);
 
+            threshold = -threshold;
             boolean isSpeedLessThanMaxSpeed = getCurrentSpeed() - getMaxSpeed()/3600 < threshold;
             boolean isSpeedLessThanSpeedLimit = getCurrentSpeed() - (double)segments.get(currentSegment).getSpeedLimit()/3600 < threshold;
 
-            return (!isCarSpeedEqual || !isCarCloseToSegment) && isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;            
+            return this.state.getClass().toString() != "Braking" && (!isCarSpeedEqual || !isCarCloseToSegment) && isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;    
+
         }
         else{
             // checks if car current speed is below current segment speed limit
             boolean isSpeedLessThanMaxSpeed = getCurrentSpeed() - getMaxSpeed()/3600 < threshold;
-            boolean isSpeedLessThanSpeedLimit = getCurrentSpeed() - (double)segments.get(currentSegment).getSpeedLimit()/3600 < threshold;
+            boolean isSpeedLessThanSpeedLimit = getCurrentSpeed()- (double)segments.get(currentSegment).getSpeedLimit()/3600 < threshold;
 
             return isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;
         }
     }
-    public boolean needsConstant(Segment currentSegment, double timeIncrement){
+    public boolean needsConstant(Course course, Segment currentSegment, double timeIncrement){
+        if(state.getClass().getName() == "Coasting") return false;
+
         double threshold = timeIncrement/700;
         double speedDiffMax = getCurrentSpeed() - getMaxSpeed()/3600;
-        boolean isSpeedEqualToMaxSpeed =  speedDiffMax < threshold && speedDiffMax > -threshold;
+        boolean isSpeedEqualToMaxSpeed =  Math.abs(speedDiffMax) < threshold;
         
         double speedDiffLimit = getCurrentSpeed() - (double)currentSegment.getSpeedLimit()/3600;
-        boolean isSpeedEqualToSpeedLimit = speedDiffLimit < threshold && speedDiffLimit > -threshold ;
+        boolean isSpeedEqualToSpeedLimit = Math.abs(speedDiffLimit) < threshold;
 
-        return isSpeedEqualToMaxSpeed || isSpeedEqualToSpeedLimit;
+        return (isSpeedEqualToMaxSpeed || isSpeedEqualToSpeedLimit);
     }
 
     public void run(double timeIncrement){

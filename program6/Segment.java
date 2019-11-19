@@ -6,6 +6,13 @@ public class Segment {
     private double length;
     private int segmentNumber;
     private int lanes;
+
+    Segment(Segment segment){
+        this.segmentNumber = segment.segmentNumber;
+        this.length = segment.length;
+        this.speedLimit = segment.speedLimit;
+        this.lanes = segment.lanes;
+    }
     
     Segment(int segmentNumber, double length, int speedLimit, int lanes){
         this.segmentNumber = segmentNumber;

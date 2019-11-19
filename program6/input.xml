@@ -22,7 +22,7 @@
     <DRIVER_TYPE>
         <TYPE_NAME>Aggressive</TYPE_NAME>
         <FOLLOW_TIME>1.0</FOLLOW_TIME>
-        <SPEED_LIMIT> 30.0 </SPEED_LIMIT>
+        <SPEED_LIMIT> 120.0 </SPEED_LIMIT>
         <MAX_ACCELERATION>20.0</MAX_ACCELERATION>
     </DRIVER_TYPE>
     <DRIVER_TYPE>
@@ -37,16 +37,16 @@
         <SPEED_LIMIT> 65.0 </SPEED_LIMIT>
         <MAX_ACCELERATION>12.0</MAX_ACCELERATION>
     </DRIVER_TYPE>
-    <DRIVER>
+    <!-- <DRIVER>
         <NAME>Jose</NAME>
         <DRIVER_TYPE>Aggressive</DRIVER_TYPE>
-    </DRIVER>
+    </DRIVER> -->
     <DRIVER>
         <NAME>Kali</NAME>
         <DRIVER_TYPE>Normal</DRIVER_TYPE>
     </DRIVER>
-    <DRIVER>
+    <!-- <DRIVER>
         <NAME>Steve</NAME>
         <DRIVER_TYPE>Careful</DRIVER_TYPE>
-    </DRIVER>
+    </DRIVER> -->
 </MODEL>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MODEL>
+    <SEGMENT>
+        <SEGMENT_NUMBER> 1</SEGMENT_NUMBER>
+        <LENGTH> 1.0</LENGTH>
+        <SPEED_LIMIT> 20</SPEED_LIMIT>
+        <LANES>1</LANES> 
+    </SEGMENT>
+    <SEGMENT>
+        <SEGMENT_NUMBER> 3 </SEGMENT_NUMBER>
+        <LENGTH> 1.0</LENGTH>
+        <SPEED_LIMIT> 30</SPEED_LIMIT>
+        <LANES>1</LANES> 
+    </SEGMENT>
+    <SEGMENT>
+        <SEGMENT_NUMBER> 2 </SEGMENT_NUMBER>
+        <LENGTH> 1.0</LENGTH>
+        <SPEED_LIMIT> 60</SPEED_LIMIT>
+        <LANES>1</LANES> 
+    </SEGMENT>
+    
+    <DRIVER_TYPE>
+        <TYPE_NAME>Aggressive</TYPE_NAME>
+        <FOLLOW_TIME>1.0</FOLLOW_TIME>
+        <SPEED_LIMIT> 120.0 </SPEED_LIMIT>
+        <MAX_ACCELERATION>20.0</MAX_ACCELERATION>
+    </DRIVER_TYPE>
+    <DRIVER_TYPE>
+        <TYPE_NAME>Normal</TYPE_NAME>
+        <FOLLOW_TIME>2.0</FOLLOW_TIME>
+        <SPEED_LIMIT> 80.0 </SPEED_LIMIT>
+        <MAX_ACCELERATION>15.0</MAX_ACCELERATION>
+    </DRIVER_TYPE>
+    <DRIVER_TYPE>
+        <TYPE_NAME>Careful</TYPE_NAME>
+        <FOLLOW_TIME>3.0</FOLLOW_TIME>
+        <SPEED_LIMIT> 65.0 </SPEED_LIMIT>
+        <MAX_ACCELERATION>12.0</MAX_ACCELERATION>
+    </DRIVER_TYPE>
+    <DRIVER>
+        <NAME>Jose</NAME>
+        <DRIVER_TYPE>Aggressive</DRIVER_TYPE>
+    </DRIVER>
+    <DRIVER>
+        <NAME>Kali</NAME>
+        <DRIVER_TYPE>Normal</DRIVER_TYPE>
+    </DRIVER>
+    <DRIVER>
+        <NAME>Steve</NAME>
+        <DRIVER_TYPE>Careful</DRIVER_TYPE>
+    </DRIVER>
+</MODEL>

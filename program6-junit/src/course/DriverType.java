@@ -1,6 +1,5 @@
-/**
- * DriverType
- */
+package course;
+
 public class DriverType {
 
     private String typeName;
@@ -8,7 +7,6 @@ public class DriverType {
     private double speedLimit;
     private double maxAccel;
 
-    // constructor
     DriverType(String typeName, double followTime, double speedLimit, double maxAccel){
         this.typeName = typeName;
         this.followTime = followTime;
@@ -16,7 +14,7 @@ public class DriverType {
         this.maxAccel = maxAccel;
     }
 
-    // accessors and mutators
+    // getters
     public String getTypeName(){
         return typeName;
     }
@@ -30,6 +28,7 @@ public class DriverType {
         return maxAccel;
     }
 
+    // setters
     public void setTypeName(String typeName){
         this.typeName = typeName;
     }

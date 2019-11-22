@@ -1,28 +1,31 @@
-public class Coasting implements PositionState{
+package course;
+
+public class Braking implements PositionState {
     Car car;
-    public Coasting(Car car){
+    public Braking(Car car){
         this.car = car;
     }
+    // decelerates speed and computes new location with timeIncrement
     @Override
     public void newPos(double timeIncrement) {
+        double newSpeed = car.getCurrentSpeed() - (car.getAccel()/3600) * timeIncrement;
+        car.setCurrentSpeed(newSpeed);
         double newLocation = car.getLocation() + car.getCurrentSpeed() * timeIncrement;
         car.setLocation(newLocation);
     }
 
     @Override
     public void decelForSegment(Segment segment, double timeIncrement) {
-        car.setState(car.getBrakingState());
-        
+
     }
 
     @Override
     public void decelForCarAhead(Car front, double timeIncrement) {
-        car.setState(car.getBrakingState());
+
     }
 
     @Override
     public void needToBrake() {
-        car.setState(car.getBrakingState());
+
     }
-    
 }

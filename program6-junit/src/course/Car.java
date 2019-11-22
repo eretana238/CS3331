@@ -1,3 +1,5 @@
+package course;
+
 import java.util.ArrayList;
 
 import org.w3c.dom.Document;
@@ -6,11 +8,12 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
+// Formulas to remember:
 // d = Vi*t + 0.5*a*t*t
 // vf = vi + a*t
 // d = v * t
 
-class Car{
+public class Car{
     private Driver driver;
     private static int driverNumber;
     private int carNumber;
@@ -35,7 +38,12 @@ class Car{
     
     private double elapsedTime;
 
-    Car(Document doc){
+    public Car(){
+        accelerating = new Accelerating(this);
+        coasting = new Coasting(this);
+        braking = new Braking(this);
+    }
+    public Car(Document doc){
         setDoc(doc);
         assignDriver();
         accelerating = new Accelerating(this);
@@ -48,8 +56,9 @@ class Car{
 
     // sets the driver
     public void assignDriver(){
+        // assigns new driver every time car instance is created
+        // driverNumber allows this with static
         NodeList nList = doc.getElementsByTagName("DRIVER");
-            
         Node nNode = nList.item(driverNumber);
 
         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -64,23 +73,26 @@ class Car{
             driverNumber++;
         }
     }
+    // checks if the car is the same lane as another car
     public boolean isInSameLane(int lane){
         return laneNumber == lane;
     }
-
+    // checks if decelerating is necessary, to change to a lower speed limit or car aheads speed
     public boolean needsDecelerating(Course course, int currentSegment){
         if(state.getClass().getName() == "Braking") return false;
-        if(currentSpeed > course.getSegments().get(currentSegment).getSpeedLimit()/3600) return true;
-        // determine if the coures.getSegements().size()-1
-        if(currentSegment < course.getSegments().size()-1){
-            double currentSpeedLimit = course.getSegments().get(currentSegment).getSpeedLimit();
-            double nextSpeedLimit = course.getSegments().get(currentSegment+1).getSpeedLimit();
-            boolean decreasingSpeedLimits = currentSpeedLimit > nextSpeedLimit;
-            return (course.isCarAhead(carNumber) || decreasingSpeedLimits) && currentSpeed > nextSpeedLimit/3600;
+        else{
+            if(currentSpeed > (double)course.getSegments().get(currentSegment).getSpeedLimit()/3600) return true;
+            // determine if the segment is not the last
+            if(currentSegment < course.getSegments().size()-1){
+                double currentSpeedLimit = course.getSegments().get(currentSegment).getSpeedLimit();
+                double nextSpeedLimit = course.getSegments().get(currentSegment+1).getSpeedLimit();
+                boolean decreasingSpeedLimits = currentSpeedLimit > nextSpeedLimit;
+                return (course.isCarAhead(carNumber) || decreasingSpeedLimits) && currentSpeed > nextSpeedLimit/3600;
+            }
+            return course.isCarAhead(carNumber);
         }
-        
-        return course.isCarAhead(carNumber);
     }
+    // checks if accelerating is necessary,
     public boolean needsAccelerating(Course course, int currentSegment, double timeIncrement){
         // checks if speed is the same as next segment and if car is close to ending segment
         // prevents accelerating when segment is about to end
@@ -109,6 +121,7 @@ class Car{
             return isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;
         }
     }
+    // checks if coasting is necessary, only when car current speed is equal either to max or current segment speed limit
     public boolean needsConstant(Course course, Segment currentSegment, double timeIncrement){
         if(state.getClass().getName() == "Coasting") return false;
 
@@ -121,16 +134,14 @@ class Car{
 
         return (isSpeedEqualToMaxSpeed || isSpeedEqualToSpeedLimit);
     }
-
+    // runs car for time
     public void run(double timeIncrement){
         elapsedTime += timeIncrement;
         // run state
         state.newPos(timeIncrement);
     }
 
-    public void setState(PositionState state){
-        this.state = state;
-    }
+    // changing of states
     public void accel(){
         this.state = accelerating;
     }
@@ -140,6 +151,10 @@ class Car{
     public void brake(){
         this.state = braking;
     }
+    // setters
+    public void setState(PositionState state){
+        this.state = state;
+    }    
     // sets the document file form xml
     public void setDoc(Document doc){
         this.doc = doc;
@@ -165,10 +180,12 @@ class Car{
     public void setLaneNumber(int laneNumber){
         this.laneNumber = laneNumber;
     }
+    // adds velocity and location for each 30s
     public void addResult(ArrayList<Double> result){
         this.results.add(result);
     }
-
+    
+    // getters
     public PositionState getState(){
         return state;
     }

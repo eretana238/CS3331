@@ -1,6 +1,5 @@
-/**
- * Segment
- */
+package course;
+
 public class Segment {
     private int speedLimit;
     private double length;
@@ -20,6 +19,7 @@ public class Segment {
         this.speedLimit = speedLimit;
         this.lanes = lanes;
     }
+    // getters
 
     public int getSpeedLimit(){
         return speedLimit;
@@ -33,7 +33,7 @@ public class Segment {
     public int getLanes(){
         return lanes;
     }
-
+    // setters
     public void setSpeedLimit(int speedLimit){
         this.speedLimit = speedLimit;
     }

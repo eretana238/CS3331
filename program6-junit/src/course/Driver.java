@@ -1,3 +1,5 @@
+package course;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -16,6 +18,7 @@ public class Driver {
         this.name = name;
         this.typeName = typeName;
     }
+    // getters
     public String getName(){
         return name;
     }
@@ -25,7 +28,7 @@ public class Driver {
     public DriverType getDriverType(){
         return driverType;
     }
-
+    // setters
     // sets the document file form xml
     public void setDoc(Document doc){
         this.doc = doc;

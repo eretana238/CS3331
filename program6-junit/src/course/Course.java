@@ -1,3 +1,5 @@
+package course;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +14,7 @@ public class Course {
     private Document doc;
     private List<Car> cars = new ArrayList<Car>();
     private double totalCourseLength;
-
+    // make only one static instance
     private Course(){}
 
     private static class CourseHolder{
@@ -45,7 +47,7 @@ public class Course {
             segments.add(segment);
         }
     }
-
+    // creates circular course by adding previous segments to the list by the lap number
     public void createCircularCourse(int laps){
         int size = segments.size();
         int segmentNumber = size+1; 
@@ -59,21 +61,58 @@ public class Course {
             }
         }
     }
+    // checks if the car is close to finishing the segment to start breaking to lower speed limit
+    public boolean isSpeedLimitInRange(int carNumber, int nextSegment){
+        // get time remaining to finish the segment, and compare time when decelerating current speed to next speed limit
+        if(nextSegment > segments.size()-1) return false;
 
-    public void setDocument(Document doc){
-        this.doc = doc;
+        double changeToSegmentSpeedTime = Math.abs(segments.get(nextSegment).getSpeedLimit() - cars.get(carNumber).getCurrentSpeed()*3600)/cars.get(carNumber).getAccel();
+        double distanceToStartBraking = cars.get(carNumber).getCurrentSpeed() * changeToSegmentSpeedTime - .5 * (cars.get(carNumber).getAccel()/3600) * Math.pow(changeToSegmentSpeedTime, 2);
+        
+        double remainingDist = getRemainingDistanceOfSegment(cars.get(carNumber)) - distanceToStartBraking;
+        boolean startDecel =  remainingDist <= distanceToStartBraking; 
+        return !isSameSpeed(carNumber, nextSegment) && startDecel; 
     }
-    public void setTotalCourseLength(){
-        for(Segment segment: segments){
-            totalCourseLength += segment.getLength();
+    // checks if the car current speed is the same as next segment
+    public boolean isSameSpeed(int carNumber, int nextSegment){
+        double threshold = 0.001;
+        // temp
+        double speedLimit = (double)segments.get(nextSegment).getSpeedLimit()/3600;
+        double currentSpeed = cars.get(carNumber).getCurrentSpeed(); 
+        if(Math.abs(speedLimit - currentSpeed) <= threshold){
+            // cars.get(carNumber).setState(cars.get(carNumber).getCoastingState());
+            return true;
         }
+        return false;
+    }       
+    // checks if a car, in the same lane, is close to the current car
+    public boolean isCarAhead(int carNumber){
+        ArrayList<Car> carsInLane = getCarsInSameLane(cars.get(carNumber));
+        for(int i = 0; i < carsInLane.size(); i++){
+            // only compares the cars that are in front of current car and in same lane
+            if(carNumber != i && cars.get(i).getLocation() > cars.get(carNumber).getLocation()){
+                double threshold = 0.0001;
+                double distance = cars.get(carNumber).getCurrentSpeed() * cars.get(carNumber).getDriver().getDriverType().getFollowTime();
+                double diff = Math.abs(cars.get(carNumber).getLocation() - cars.get(i).getLocation()); 
+                if(diff - distance < threshold) return true;
+            }
+        }
+        return false;
     }
-    public void setCars(List<Car> cars){
-        this.cars = cars;
-    }
-
+    // getter list of segment
     public ArrayList<Segment> getSegments(){
         return this.segments;
+    }
+
+    // gets all the cars that are in the same lane
+    public ArrayList<Car> getCarsInSameLane(Car car){
+        ArrayList<Car> carsInLane = new ArrayList<Car>();
+        for(int i = 0; i < cars.size(); i++){
+            if(cars.get(i).getLaneNumber() == car.getLaneNumber() && cars.get(i) != car){
+                carsInLane.add(cars.get(i));
+            }
+        }
+        return carsInLane;
     }
 
     // course gets the segment in which the car is in
@@ -100,56 +139,20 @@ public class Course {
         }
         return segments.get(getCurrentSegment(car)).getLength() - carDistance;
     }
-
+    // getter
     public double getTotalCourseLength(){
         return this.totalCourseLength;
     }
-    
-    public boolean isSpeedLimitInRange(int carNumber, int nextSegment){
-        // get time remaining to finish the segment, and compare time when decelerating current speed to next speed limit
-        if(nextSegment > segments.size()-1) return false;
-
-        double changeToSegmentSpeedTime = Math.abs(segments.get(nextSegment).getSpeedLimit() - cars.get(carNumber).getCurrentSpeed()*3600)/cars.get(carNumber).getAccel();
-        double distanceToStartBraking = cars.get(carNumber).getCurrentSpeed() * changeToSegmentSpeedTime - .5 * (cars.get(carNumber).getAccel()/3600) * Math.pow(changeToSegmentSpeedTime, 2);
-        
-        double remainingDist = getRemainingDistanceOfSegment(cars.get(carNumber)) - distanceToStartBraking;
-        boolean startDecel =  remainingDist <= distanceToStartBraking; 
-        return !isSameSpeed(carNumber, nextSegment) && startDecel; 
+    // setters
+    public void setDocument(Document doc){
+        this.doc = doc;
     }
-
-    public boolean isSameSpeed(int carNumber, int nextSegment){
-        double threshold = 0.001;
-        // temp
-        double speedLimit = (double)segments.get(nextSegment).getSpeedLimit()/3600;
-        double currentSpeed = cars.get(carNumber).getCurrentSpeed(); 
-        if(Math.abs(speedLimit - currentSpeed) <= threshold){
-            // cars.get(carNumber).setState(cars.get(carNumber).getCoastingState());
-            return true;
+    public void setTotalCourseLength(){
+        for(Segment segment: segments){
+            totalCourseLength += segment.getLength();
         }
-        return false;
-    }       
-    // gets all the cars that are in the same lane
-    public ArrayList<Car> getCarsInSameLane(Car car){
-        ArrayList<Car> carsInLane = new ArrayList<Car>();
-        for(int i = 0; i < cars.size(); i++){
-            if(cars.get(i).getLaneNumber() == car.getLaneNumber() && cars.get(i) != car){
-                carsInLane.add(cars.get(i));
-            }
-        }
-        return carsInLane;
     }
-
-    public boolean isCarAhead(int carNumber){
-        ArrayList<Car> carsInLane = getCarsInSameLane(cars.get(carNumber));
-        for(int i = 0; i < carsInLane.size(); i++){
-            // only compares the cars that are in front of current car and in same lane
-            if(carNumber != i && cars.get(i).getLocation() > cars.get(carNumber).getLocation()){
-                double threshold = 0.0001;
-                double distance = cars.get(carNumber).getCurrentSpeed() * cars.get(carNumber).getDriver().getDriverType().getFollowTime();
-                double diff = Math.abs(cars.get(carNumber).getLocation() - cars.get(i).getLocation()); 
-                if(diff - distance < threshold) return true;
-            }
-        }
-        return false;
+    public void setCars(List<Car> cars){
+        this.cars = cars;
     }
 }

@@ -1,3 +1,5 @@
+package course;
+
 public interface PositionState{
     public void newPos(double timeIncrement);
     public void needToBrake();

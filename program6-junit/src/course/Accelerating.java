@@ -1,34 +1,30 @@
-import java.util.ArrayList;
+package course;
 
-public class Braking implements PositionState{
+public class Accelerating implements PositionState {
     Car car;
-    public Braking(Car car){
+    public Accelerating(Car car){
         this.car = car;
     }
+    // creates new speed and new location based on new speed
     @Override
     public void newPos(double timeIncrement) {
-        double elapsedTime = car.getElapsedTime() + timeIncrement;
-        car.setElapsedTime(elapsedTime);
-        double newSpeed = car.getCurrentSpeed() - (car.getAccel()/3600) * timeIncrement;
+        double newSpeed = car.getCurrentSpeed() + (car.getAccel()/3600) * timeIncrement;
         car.setCurrentSpeed(newSpeed);
         double newLocation = car.getLocation() + car.getCurrentSpeed() * timeIncrement;
         car.setLocation(newLocation);
     }
-
+    // changes state to breaking
     @Override
     public void decelForSegment(Segment segment, double timeIncrement) {
-        System.out.println("Already braking");
-
+        car.setState(car.getBrakingState());
     }
 
     @Override
     public void decelForCarAhead(Car front, double timeIncrement) {
-        System.out.println("Already braking");
-
+        car.setState(car.getBrakingState());
     }
-
     @Override
     public void needToBrake() {
-        System.out.println("Already braking");
+        car.setState(car.getBrakingState());
     }
 }

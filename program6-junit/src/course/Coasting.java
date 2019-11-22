@@ -1,20 +1,21 @@
+package course;
 
-public class Accelerating implements PositionState {
+public class Coasting implements PositionState {
     Car car;
-    public Accelerating(Car car){
+    public Coasting(Car car){
         this.car = car;
     }
+    // changes location with current speeed based in timeIncrement
     @Override
     public void newPos(double timeIncrement) {
-        double newSpeed = car.getCurrentSpeed() + (car.getAccel()/3600) * timeIncrement;
-        car.setCurrentSpeed(newSpeed);
         double newLocation = car.getLocation() + car.getCurrentSpeed() * timeIncrement;
         car.setLocation(newLocation);
     }
-
+    // changes state to breaking
     @Override
     public void decelForSegment(Segment segment, double timeIncrement) {
         car.setState(car.getBrakingState());
+        
     }
 
     @Override
@@ -24,7 +25,7 @@ public class Accelerating implements PositionState {
 
     @Override
     public void needToBrake() {
-        System.out.println("Braking");
         car.setState(car.getBrakingState());
     }
+    
 }

@@ -44,7 +44,7 @@ public class CarTest {
     }
     @Test
     public void needsDeceleratingTest(){
-        assertEquals(false, car.needsDecelerating(course, 0));
+        assertEquals(false, car.needsDecelerating(course, 0, 0.001));
     }
     @Test
     public void needsAcceleratingTest(){

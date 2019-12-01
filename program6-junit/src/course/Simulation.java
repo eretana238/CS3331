@@ -1,4 +1,5 @@
 package course;
+
 // Author: Esteban Retana
 // Second latest commit: Added SimulationTest
 // Latest commit: Added TestRunner
@@ -26,7 +27,7 @@ public class Simulation {
     private static Document doc;
     private static Course course;
     private static List<Car> cars = new ArrayList<Car>();
-    private static double timeIncrement = 0.001;
+    private static double timeIncrement = 0.0001;
      // user input and prompt
     public static String cmdInterface(Scanner in){
         System.out.println("Please input xml file name:");
@@ -110,7 +111,7 @@ public class Simulation {
                 if(car.needsConstant(course, currentSegment, timeIncrement) && car.getState().getClass().getName() != "Coasting" && car.getElapsedTime() >= i*60)
                     car.coast();
 
-                if(car.needsDecelerating(course, course.getCurrentSegment(car))){
+                if(car.needsDecelerating(course, course.getCurrentSegment(car), timeIncrement)){
                     // car ahead has priority
                     if(course.isCarAhead(i) && car.getElapsedTime() >= i*60){
                         car.getState().decelForCarAhead(cars.get(i-1), timeIncrement);
@@ -118,6 +119,10 @@ public class Simulation {
 
                     else if(course.isSpeedLimitInRange(i,currentSegment.getSegmentNumber()) && car.getElapsedTime() >= i*60){
                         car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber()), timeIncrement);
+                    }
+
+                    else if(car.getCurrentSpeed() > (double)course.getSegments().get(course.getCurrentSegment(car)).getSpeedLimit()/3600){
+                        car.getState().needToBrake();
                     }
                 }
                 // sets car to run for the time increment

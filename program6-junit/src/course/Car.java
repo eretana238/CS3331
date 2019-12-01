@@ -78,19 +78,24 @@ public class Car{
         return laneNumber == lane;
     }
     // checks if decelerating is necessary, to change to a lower speed limit or car aheads speed
-    public boolean needsDecelerating(Course course, int currentSegment){
-        if(state.getClass().getName() == "Braking") return false;
-        else{
-            if(currentSpeed > (double)course.getSegments().get(currentSegment).getSpeedLimit()/3600) return true;
-            // determine if the segment is not the last
-            if(currentSegment < course.getSegments().size()-1){
-                double currentSpeedLimit = course.getSegments().get(currentSegment).getSpeedLimit();
-                double nextSpeedLimit = course.getSegments().get(currentSegment+1).getSpeedLimit();
-                boolean decreasingSpeedLimits = currentSpeedLimit > nextSpeedLimit;
-                return (course.isCarAhead(carNumber) || decreasingSpeedLimits) && currentSpeed > nextSpeedLimit/3600;
-            }
-            return course.isCarAhead(carNumber);
+    public boolean needsDecelerating(Course course, int currentSegment, double timeIncrement){
+        boolean isBreaking = state.getClass().getName() == "Breaking";
+        if(isBreaking) return false;
+//        not last segment check and functions
+        if(currentSegment < course.getSegments().size()-1){
+            double currentSpeedLimit = course.getSegments().get(currentSegment).getSpeedLimit();
+            double nextSpeedLimit = course.getSegments().get(currentSegment+1).getSpeedLimit();
+            boolean decreasingSpeedLimits = currentSpeedLimit > nextSpeedLimit;
+
+            return (course.isCarAhead(carNumber) || decreasingSpeedLimits) && currentSpeed > nextSpeedLimit/3600;
         }
+//        last segment
+        else{
+            boolean isSpeedHigher = currentSpeed > (double)course.getSegments().get(currentSegment).getSpeedLimit()/3600;
+            boolean noAccel = !needsAccelerating(course, currentSegment, timeIncrement);
+            return isSpeedHigher && noAccel;
+        }
+
     }
     // checks if accelerating is necessary,
     public boolean needsAccelerating(Course course, int currentSegment, double timeIncrement){
@@ -98,7 +103,7 @@ public class Car{
         // prevents accelerating when segment is about to end
         if(state.getClass().getName() == "Accelerating") return false;
 
-        double threshold = timeIncrement/100;
+        double threshold = timeIncrement/500;
         ArrayList<Segment> segments = course.getSegments();
         
         if(segments.get(currentSegment).getSegmentNumber() < segments.size()){
@@ -125,7 +130,7 @@ public class Car{
     public boolean needsConstant(Course course, Segment currentSegment, double timeIncrement){
         if(state.getClass().getName() == "Coasting") return false;
 
-        double threshold = timeIncrement/700;
+        double threshold = timeIncrement/500;
         double speedDiffMax = getCurrentSpeed() - getMaxSpeed()/3600;
         boolean isSpeedEqualToMaxSpeed =  Math.abs(speedDiffMax) < threshold;
         

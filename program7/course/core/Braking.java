@@ -15,19 +15,11 @@ public class Braking implements PositionState {
     }
 
     @Override
-    public void decelForSegment(Segment segment, double timeIncrement) {
-        System.out.println("Already braking");
-
-    }
+    public void decelForSegment(Segment segment, double timeIncrement) { }
 
     @Override
-    public void decelForCarAhead(Car front, double timeIncrement) {
-        System.out.println("Already braking");
-
-    }
+    public void decelForCarAhead(Car front, double timeIncrement) { }
 
     @Override
-    public void needToBrake() {
-        System.out.println("Already braking");
-    }
+    public void needToBrake() { }
 }

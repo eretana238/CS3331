@@ -14,6 +14,7 @@ public class Course {
     private Document doc;
     private List<Car> cars = new ArrayList<Car>();
     private double totalCourseLength;
+    private double circumference;
     // make only one static instance
     private Course(){}
 
@@ -45,6 +46,7 @@ public class Course {
         }
         for(Segment segment : temp.values()){
             segments.add(segment);
+            circumference += segment.getLength();
         }
     }
     // creates circular course by adding previous segments to the list by the lap number
@@ -99,6 +101,9 @@ public class Course {
         }
         return false;
     }
+    public double getCircumference(){
+        return this.circumference;
+    }
     // getter list of segment
     public ArrayList<Segment> getSegments(){
         return this.segments;
@@ -143,6 +148,16 @@ public class Course {
     public double getTotalCourseLength(){
         return this.totalCourseLength;
     }
+
+    public double[] getSegmentLocations(){
+        double[] locations = new double[segments.size()-1];
+        double location = 0.0;
+        for(int i = 0; i < segments.size()-1; i++){
+            location += segments.get(i).getLength();
+            locations[i] = location;
+        }
+        return locations;
+    }
     // setters
     public void setDocument(Document doc){
         this.doc = doc;
@@ -154,5 +169,9 @@ public class Course {
     }
     public void setCars(List<Car> cars){
         this.cars = cars;
+    }
+
+    public void setCircumference(double circumference){
+        this.circumference = circumference;
     }
 }

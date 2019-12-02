@@ -61,8 +61,9 @@ public class Course {
             }
         }
     }
+
     // checks if the car is close to finishing the segment to start breaking to lower speed limit
-    public boolean isSpeedLimitInRange(int carNumber, int nextSegment){
+    public boolean isSpeedLimitInRange(int carNumber, int nextSegment, double timeIncrement){
         // get time remaining to finish the segment, and compare time when decelerating current speed to next speed limit
         if(nextSegment > segments.size()-1) return false;
 
@@ -71,27 +72,26 @@ public class Course {
         
         double remainingDist = getRemainingDistanceOfSegment(cars.get(carNumber)) - distanceToStartBraking;
         boolean startDecel =  remainingDist <= distanceToStartBraking; 
-        return !isSameSpeed(carNumber, nextSegment) && startDecel; 
+        return !isSameSpeed(carNumber, nextSegment, timeIncrement) && startDecel;
     }
     // checks if the car current speed is the same as next segment
-    public boolean isSameSpeed(int carNumber, int nextSegment){
-        double threshold = 0.001;
+    public boolean isSameSpeed(int carNumber, int nextSegment, double timeIncrement){
         // temp
         double speedLimit = (double)segments.get(nextSegment).getSpeedLimit()/3600;
         double currentSpeed = cars.get(carNumber).getCurrentSpeed(); 
-        if(Math.abs(speedLimit - currentSpeed) <= threshold){
+        if(Math.abs(speedLimit - currentSpeed) <= timeIncrement){
             // cars.get(carNumber).setState(cars.get(carNumber).getCoastingState());
             return true;
         }
         return false;
     }       
     // checks if a car, in the same lane, is close to the current car
-    public boolean isCarAhead(int carNumber){
+    public boolean isCarAhead(int carNumber, double timeIncrement){
         ArrayList<Car> carsInLane = getCarsInSameLane(cars.get(carNumber));
         for(int i = 0; i < carsInLane.size(); i++){
             // only compares the cars that are in front of current car and in same lane
             if(carNumber != i && cars.get(i).getLocation() > cars.get(carNumber).getLocation()){
-                double threshold = 0.0001;
+                double threshold = 0.5;
                 double distance = cars.get(carNumber).getCurrentSpeed() * cars.get(carNumber).getDriver().getDriverType().getFollowTime();
                 double diff = Math.abs(cars.get(carNumber).getLocation() - cars.get(i).getLocation()); 
                 if(diff - distance < threshold) return true;

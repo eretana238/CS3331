@@ -1,7 +1,8 @@
-package course;
+package course.core;
 
 import java.util.ArrayList;
 
+import course.core.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -115,7 +116,7 @@ public class Car{
             boolean isSpeedLessThanMaxSpeed = getCurrentSpeed() - getMaxSpeed()/3600 < threshold;
             boolean isSpeedLessThanSpeedLimit = getCurrentSpeed() - (double)segments.get(currentSegment).getSpeedLimit()/3600 < threshold;
 
-            return this.state.getClass().toString() != "Braking" && (!isCarSpeedEqual || !isCarCloseToSegment) && isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;    
+            return this.state.getClass().toString() != "Braking" && (!isCarSpeedEqual || !isCarCloseToSegment) && isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit && !course.isCarAhead(this.carNumber);
 
         }
         else{
@@ -123,7 +124,7 @@ public class Car{
             boolean isSpeedLessThanMaxSpeed = getCurrentSpeed() - getMaxSpeed()/3600 < threshold;
             boolean isSpeedLessThanSpeedLimit = getCurrentSpeed()- (double)segments.get(currentSegment).getSpeedLimit()/3600 < threshold;
 
-            return isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit;
+            return isSpeedLessThanMaxSpeed && isSpeedLessThanSpeedLimit && !course.isCarAhead(this.carNumber);
         }
     }
     // checks if coasting is necessary, only when car current speed is equal either to max or current segment speed limit

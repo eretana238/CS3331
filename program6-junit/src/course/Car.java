@@ -63,7 +63,7 @@ public class Car{
 
         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
             Element eElement = (Element) nNode;
-            
+
             String name = eElement.getElementsByTagName("NAME").item(0).getTextContent().trim();
             String driverTypeName = eElement.getElementsByTagName("DRIVER_TYPE").item(0).getTextContent().trim();
             driver = new Driver(name, driverTypeName);
@@ -87,13 +87,13 @@ public class Car{
             double nextSpeedLimit = course.getSegments().get(currentSegment+1).getSpeedLimit();
             boolean decreasingSpeedLimits = currentSpeedLimit > nextSpeedLimit;
 
-            return (course.isCarAhead(carNumber) || decreasingSpeedLimits) && currentSpeed > nextSpeedLimit/3600;
+            return (course.isCarAhead(carNumber, timeIncrement) || decreasingSpeedLimits) && currentSpeed > nextSpeedLimit/3600;
         }
 //        last segment
         else{
-            boolean isSpeedHigher = currentSpeed > (double)course.getSegments().get(currentSegment).getSpeedLimit()/3600;
+            boolean isSpeedHigherThanSpeedLimit = currentSpeed > (double)course.getSegments().get(currentSegment).getSpeedLimit()/3600;
             boolean noAccel = !needsAccelerating(course, currentSegment, timeIncrement);
-            return isSpeedHigher && noAccel;
+            return isSpeedHigherThanSpeedLimit && noAccel;
         }
 
     }
@@ -109,7 +109,7 @@ public class Car{
         if(segments.get(currentSegment).getSegmentNumber() < segments.size()){
             double speedDiff = getCurrentSpeed() - (double)segments.get(currentSegment+1).getSpeedLimit()/3600;
             boolean isCarSpeedEqual = speedDiff < threshold && speedDiff > -threshold;
-            boolean isCarCloseToSegment = course.isSpeedLimitInRange(carNumber, currentSegment+1);
+            boolean isCarCloseToSegment = course.isSpeedLimitInRange(carNumber, currentSegment+1, timeIncrement);
 
             threshold = -threshold;
             boolean isSpeedLessThanMaxSpeed = getCurrentSpeed() - getMaxSpeed()/3600 < threshold;
@@ -136,6 +136,13 @@ public class Car{
         
         double speedDiffLimit = getCurrentSpeed() - (double)currentSegment.getSpeedLimit()/3600;
         boolean isSpeedEqualToSpeedLimit = Math.abs(speedDiffLimit) < threshold;
+
+        if(course.isCarAhead(this.carNumber, timeIncrement)){
+            ArrayList<Car> carsInLane = course.getCarsInSameLane(this);
+            for(Car car : carsInLane){
+                if(car.getCurrentSpeed() - currentSpeed < timeIncrement/100) return true;
+            }
+        }
 
         return (isSpeedEqualToMaxSpeed || isSpeedEqualToSpeedLimit);
     }

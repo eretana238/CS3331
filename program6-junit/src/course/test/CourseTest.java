@@ -18,6 +18,7 @@ public class CourseTest {
     static final Course course = Course.getInstance();
     static ArrayList<Car> cars = new ArrayList<Car>();
     static Document doc;
+    static double timeIncrement = 0.01;
     @Before
     public void setUp() {
         File file = new File("./course/input.xml");
@@ -50,29 +51,29 @@ public class CourseTest {
     @Test
     public void setTotalCourseLengthTest(){
         course.setTotalCourseLength();
-        assertEquals(3.0, course.getTotalCourseLength(), 0.001);
+        assertEquals(3.0, course.getTotalCourseLength(), timeIncrement);
     }
     @Test
     public void createCircularCourseTest(){
         course.createCircularCourse(2);
         course.setTotalCourseLength();
-        assertEquals(6.0, course.getTotalCourseLength(), 0.001);
+        assertEquals(6.0, course.getTotalCourseLength(), timeIncrement);
     }
     @Test
     public void isSpeedLimitInRangeTest(){
-        assertEquals(false, course.isSpeedLimitInRange(cars.get(0).getCarNumber(), 1));
+        assertEquals(false, course.isSpeedLimitInRange(cars.get(0).getCarNumber(), 1, timeIncrement));
         cars.get(0).setLocation(0.98999);
         cars.get(0).setCurrentSpeed(0.00833);
-        assertEquals(true, course.isSpeedLimitInRange(cars.get(0).getCarNumber(), 1));
+        assertEquals(true, course.isSpeedLimitInRange(cars.get(0).getCarNumber(), 1, timeIncrement));
     }
     @Test
     public void isSameSpeedTest(){
-        assertEquals(true, course.isSameSpeed(0,1));
-        assertEquals(false, course.isSameSpeed(1, 2));
+        assertEquals(true, course.isSameSpeed(0,1, timeIncrement));
+        assertEquals(false, course.isSameSpeed(1, 2, timeIncrement));
     }
     @Test
     public void isCarAheadTest(){
-        assertEquals(false, course.isCarAhead(0));
+        assertEquals(false, course.isCarAhead(0, timeIncrement));
     }
     @Test
     public void getCarsInSameLaneTest(){

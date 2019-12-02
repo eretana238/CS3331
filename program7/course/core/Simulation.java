@@ -21,10 +21,12 @@ public class Simulation implements Runnable {
     private Document doc;
     private Course course;
     private List<Car> cars = new ArrayList<Car>();
-    private double timeIncrement = 0.005;
+    private double timeIncrement = 0.1;
     private String pathName;
     private Controller controller;
     private boolean running;
+    private double elapsedTime = 0.0;
+    private int laps = 3;
 
     // sets the document file form xml
     public void setDoc(File inputFile){
@@ -63,12 +65,17 @@ public class Simulation implements Runnable {
         }
     }
 
+    public void setRunning(boolean running){
+        this.running = running;
+    }
+
     public int getCarLaneNumber(int carNumber){
         return cars.get(carNumber).getLaneNumber();
     }
     // starts the cars to run on the course
     public void runCars(){
         // run each car for timeIncrement
+        elapsedTime += timeIncrement;
         for(int i = 0; i < cars.size(); i++){
             Car car = cars.get(i);
             ArrayList<Segment> segments = course.getSegments();
@@ -103,13 +110,6 @@ public class Simulation implements Runnable {
             }
             // sets car to run for the time increment
             car.run(timeIncrement);
-
-            if(car.getElapsedTime() % 30.0 <= timeIncrement){
-                ArrayList<Double> result = new ArrayList<Double>();
-                result.add(car.getCurrentSpeed()*3600);
-                result.add(car.getLocation());
-                car.addResult(result);
-            }
         }
     }
     // checks if all cars have surpassed the total length of the course
@@ -148,7 +148,6 @@ public class Simulation implements Runnable {
         course.setCars(cars);
         course.setSegments(doc);
         // circular course
-        int laps = 2;
         course.createCircularCourse(laps);
         course.setTotalCourseLength();
     }
@@ -168,17 +167,25 @@ public class Simulation implements Runnable {
         }
         return locations;
     }
+    public boolean getRunning(){
+        return running;
+    }
 
     @Override
     public void run() {
         while(true){
             try{
-                Thread.sleep(20);
+                Thread.sleep(0);
                 if(running){
                     runCars();
-                    controller.updateView();
+                    if(elapsedTime % 1.0 <= timeIncrement){
+                        controller.updateView();
+                        Thread.sleep(40);
+                    }
                 }
-                if(allCarsFinished()) break;
+                if(allCarsFinished()){
+                    break;
+                }
             }
             catch(InterruptedException e){
                 e.printStackTrace();

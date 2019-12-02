@@ -11,7 +11,6 @@ package course;
 // of driver type (driving style)
 // Program used JUNIT 4 to test main functions from each class
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,7 +26,7 @@ public class Simulation {
     private static Document doc;
     private static Course course;
     private static List<Car> cars = new ArrayList<Car>();
-    private static double timeIncrement = 0.0001;
+    private static double timeIncrement = 0.1;
      // user input and prompt
     public static String cmdInterface(Scanner in){
         System.out.println("Please input xml file name:");
@@ -59,7 +58,7 @@ public class Simulation {
     // prints car result data
     public static void printCarResults(){
         for(int i = 0; i < cars.size(); i++){
-            System.out.print("TIME\tSPEED\tDISTANCE\t");
+            System.out.print("TIME\tSPEED\tDISTANCE\t\t");
         }
         System.out.println();
         for(int j = 0; j < getMaxResultSize(); j++){
@@ -67,12 +66,12 @@ public class Simulation {
                 // check if the j is at the size of the car.results, then repeat last value
                 if(j < cars.get(i).getResults().size()){
                     ArrayList<Double> result = cars.get(i).getResults().get(j);
-                    System.out.printf("%d\t%.2f\t%.2f\t\t", j*30,result.get(0),result.get(1));
+                    System.out.printf("%d\t\t%.2f\t\t%.2f\t\t", j*30,result.get(0),result.get(1));
                 }
                 else{
                     int size = cars.get(i).getResults().size();
                     ArrayList<Double> result = cars.get(i).getResults().get(size-1);
-                    System.out.printf("%d\t%.2f\t%.2f\t\t", j*30,result.get(0),result.get(1));
+                    System.out.printf("%d\t\t%.2f\t\t%.2f\t\t", j*30,result.get(0),result.get(1));
                 }
             }
             System.out.println();
@@ -113,11 +112,11 @@ public class Simulation {
 
                 if(car.needsDecelerating(course, course.getCurrentSegment(car), timeIncrement)){
                     // car ahead has priority
-                    if(course.isCarAhead(i) && car.getElapsedTime() >= i*60){
+                    if(course.isCarAhead(i, timeIncrement) && car.getElapsedTime() >= i*60){
                         car.getState().decelForCarAhead(cars.get(i-1), timeIncrement);
                     }
 
-                    else if(course.isSpeedLimitInRange(i,currentSegment.getSegmentNumber()) && car.getElapsedTime() >= i*60){
+                    else if(course.isSpeedLimitInRange(i,currentSegment.getSegmentNumber(), timeIncrement) && car.getElapsedTime() >= i*60){
                         car.getState().decelForSegment(course.getSegments().get(currentSegment.getSegmentNumber()), timeIncrement);
                     }
 

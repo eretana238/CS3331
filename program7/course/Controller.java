@@ -21,4 +21,11 @@ public class Controller {
     public synchronized void updateView(){
         view.update(model.getCarLocations(), model.getCourse().getSegmentLocations(), model.getCourse().getCircumference());
     }
+
+    public synchronized boolean getRunningState(){
+        return model.getRunning();
+    }
+    public synchronized void setRunningState(boolean running){
+        model.setRunning(running);
+    }
 }

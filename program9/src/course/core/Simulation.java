@@ -15,7 +15,6 @@ import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 
-import course.Controller;
 import org.w3c.dom.Document;
 
 public class Simulation implements Runnable {

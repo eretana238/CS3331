@@ -1,6 +1,7 @@
 package course.view;
 
 import course.Controller;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,6 +15,7 @@ public class CourseView extends JComponent implements Runnable{
     private double[] segmentLocations;
     private double courseLength = 0.0;
     private boolean running = false;
+    private boolean stop = false;
 
     public void paint(Graphics g){
         Rectangle r = g.getClipBounds();
@@ -24,7 +26,7 @@ public class CourseView extends JComponent implements Runnable{
         if(carLocations != null){
             g.setColor(Color.black);
             g.drawOval(xPos-5,25,size,size);
-            fillLocation(g, segmentLocations, Color.black, 6);
+            fillLocation(g, segmentLocations, Color.black, 7);
             fillLocation(g, carLocations, Color.red, 12);
         }
     }
@@ -106,6 +108,7 @@ public class CourseView extends JComponent implements Runnable{
                 else if(e.getActionCommand().equalsIgnoreCase("stop")){
                     controller.setRunningState(false);
                     running = false;
+                    stop = true;
                 }
             }
         };
@@ -177,7 +180,7 @@ public class CourseView extends JComponent implements Runnable{
         while(true){
             try{
                 Thread.sleep(0);
-                if(running){
+                if(running && !stop){
                     this.repaint();
                 }
             }

@@ -108,6 +108,7 @@ public class Simulation implements Runnable {
                     car.getState().needToBrake();
                 }
             }
+
             // sets car to run for the time increment
             car.run(timeIncrement);
         }

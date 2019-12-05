@@ -1,7 +1,6 @@
 package course.core;
 
 import course.Controller;
-import course.view.CourseView;
 
 public class Main {
     public static void main(String[] args) {

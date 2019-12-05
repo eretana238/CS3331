@@ -23,6 +23,7 @@ public class CourseView extends JComponent implements Runnable{
 
         int xPos = 85;
         int size = 300;
+        // starts painting once car locations are recieved
         if(carLocations != null){
             g.setColor(Color.black);
             g.drawOval(xPos-5,25,size,size);
@@ -30,7 +31,7 @@ public class CourseView extends JComponent implements Runnable{
             fillLocation(g, carLocations, Color.red, 12);
         }
     }
-
+    // draws object at location
     public void fillLocation(Graphics g, double[] locations, Color color, int size){
         for(double loc : locations){
             int x = 225;
@@ -40,7 +41,7 @@ public class CourseView extends JComponent implements Runnable{
             g.fillOval((int)l[0], (int)l[1], size, size);
         }
     }
-
+    // gets location to draw
     public double[] drawLocation(double carLoc, int x, int y){
 //        angle = (current location / totalCourseDistance) * 360 deg
 //        radius = circumference / (2 * pi)
@@ -70,7 +71,8 @@ public class CourseView extends JComponent implements Runnable{
         JButton PAUSE = new JButton("Pause");
         JButton CONTINUE = new JButton("Continue");
         JButton STOP = new JButton("Stop");
-
+        
+        // Action listener for menu
         ActionListener al = new ActionListener() {
 
             @Override
@@ -92,7 +94,7 @@ public class CourseView extends JComponent implements Runnable{
                 }
             }
         };
-
+        // Action listener for buttons
         ActionListener buttonListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,6 +132,7 @@ public class CourseView extends JComponent implements Runnable{
         buttonsPanel.add(CONTINUE);
         buttonsPanel.add(STOP);
 
+        // layouts
         c.fill = GridBagConstraints.HORIZONTAL;
         c.ipady = 400;      //make this component tall
         c.ipadx = 200;
@@ -157,20 +160,22 @@ public class CourseView extends JComponent implements Runnable{
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
+    // changes running state
     public void toggleRunning(){
         this.running = !running;
     }
+    // sends the path to controller
     public void sendPath(String pathName){
         controller.setPathName(pathName);
     }
-
+    // updates car and course
     public void update(double[] carLocations, double[] segmentLocations, double courseLength){
         if(!running) toggleRunning();
         this.carLocations = carLocations;
         this.segmentLocations = segmentLocations;
         this.courseLength = courseLength;
     }
-
+    // sets contoller
     public void setController(Controller controller) {
         this.controller = controller;
     }
